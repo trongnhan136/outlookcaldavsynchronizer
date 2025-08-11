@@ -75,6 +75,15 @@ namespace CalDavSynchronizer
             ShowErrorMessage();
         }
 
+        public void ShowHanbiroLogin()
+        {
+            ShowErrorMessage();
+        }
+        public void ShowHanbiroConfig()
+        {
+            ShowErrorMessage();
+        }
+
         public void Dispose()
         {
         }

@@ -29,5 +29,8 @@ namespace CalDavSynchronizer
         void ShowProfileStatuses();
         void SynchronizeNowAsync();
         void ShowReports();
+
+        void ShowHanbiroLogin();
+        void ShowHanbiroConfig();
     }
 }

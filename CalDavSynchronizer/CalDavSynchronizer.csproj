@@ -215,6 +215,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StringResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="HanbiroCaldavSynchronizerRibbon.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HanbiroCaldavSynchronizerRibbon.Designer.cs">
+      <DependentUpon>HanbiroCaldavSynchronizerRibbon.cs</DependentUpon>
+    </Compile>
     <Compile Include="Implementation\Events\CalendarResourceResolver.cs" />
     <Compile Include="Implementation\Events\ICalendarResourceResolver.cs" />
     <Compile Include="IOneTimeTaskRunner.cs" />
@@ -774,6 +780,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>StringResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="HanbiroCaldavSynchronizerRibbon.resx">
+      <DependentUpon>HanbiroCaldavSynchronizerRibbon.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ui\AddResourceForm.resx">
       <DependentUpon>AddResourceForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -800,6 +809,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="CalDavSynchronizer_1_TemporaryKey.pfx" />
     <None Include="CalDavSynchronizer_TemporaryKey.pfx" />
     <Compile Include="Ui\SystrayNotification\ITrayNotifier.cs" />
     <Compile Include="Ui\SystrayNotification\NullTrayNotifier.cs" />
@@ -1075,11 +1085,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile>CalDavSynchronizer_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>1DD03B86FE5C780F60AADFD80FC8963626189ECF</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>C64F5AE79E8B1A40A279F12DEFE9EC77F63456C1</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestTimestampUrl>http://timestamp.comodoca.com/rfc3161</ManifestTimestampUrl>

@@ -56,101 +56,101 @@ namespace CalDavSynchronizer
     /// </summary>
     private void InitializeComponent ()
     {
-      this.tab1 = this.Factory.CreateRibbonTab();
-      this.group1 = this.Factory.CreateRibbonGroup();
-      this.SynchronizeNowButton = this.Factory.CreateRibbonButton();
-      this.OptionsButton = this.Factory.CreateRibbonButton();
-      this.GeneralOptionsButton = this.Factory.CreateRibbonButton();
-      this.AboutButton = this.Factory.CreateRibbonButton();
-      this.ReportsButton = this.Factory.CreateRibbonButton();
-      this.StatusesButton = this.Factory.CreateRibbonButton();
-      this.tab1.SuspendLayout();
-      this.group1.SuspendLayout();
-      this.SuspendLayout();
-      // 
-      // tab1
-      // 
-      this.tab1.Groups.Add(this.group1);
-      this.tab1.KeyTip = "CDS";
-      this.tab1.Label = "CalDav Synchronizer";
-      this.tab1.Name = "tab1";
-      // 
-      // group1
-      // 
-      this.group1.Items.Add(this.SynchronizeNowButton);
-      this.group1.Items.Add(this.OptionsButton);
-      this.group1.Items.Add(this.GeneralOptionsButton);
-      this.group1.Items.Add(this.AboutButton);
-      this.group1.Items.Add(this.ReportsButton);
-      this.group1.Items.Add(this.StatusesButton);
-      this.group1.Label = "CalDav Synchronizer";
-      this.group1.Name = "group1";
-      // 
-      // SynchronizeNowButton
-      // 
-      this.SynchronizeNowButton.Image = global::CalDavSynchronizer.Properties.Resources.Sync;
-      this.SynchronizeNowButton.KeyTip = "SN";
-      this.SynchronizeNowButton.Label = "Synchronize now";
-      this.SynchronizeNowButton.Name = "SynchronizeNowButton";
-      this.SynchronizeNowButton.ShowImage = true;
-      this.SynchronizeNowButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.SynchronizeNowButton_Click);
-      // 
-      // OptionsButton
-      // 
-      this.OptionsButton.Image = global::CalDavSynchronizer.Properties.Resources.Options;
-      this.OptionsButton.KeyTip = "SP";
-      this.OptionsButton.Label = "Synchronization Profiles";
-      this.OptionsButton.Name = "OptionsButton";
-      this.OptionsButton.ShowImage = true;
-      this.OptionsButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OptionsButton_Click);
-      // 
-      // GeneralOptionsButton
-      // 
-      this.GeneralOptionsButton.Image = global::CalDavSynchronizer.Properties.Resources.GeneralOptions;
-      this.GeneralOptionsButton.KeyTip = "GO";
-      this.GeneralOptionsButton.Label = "General Options";
-      this.GeneralOptionsButton.Name = "GeneralOptionsButton";
-      this.GeneralOptionsButton.ShowImage = true;
-      this.GeneralOptionsButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.GeneralOptionsButton_Click);
-      // 
-      // AboutButton
-      // 
-      this.AboutButton.Image = global::CalDavSynchronizer.Properties.Resources.About;
-      this.AboutButton.KeyTip = "AB";
-      this.AboutButton.Label = "About";
-      this.AboutButton.Name = "AboutButton";
-      this.AboutButton.ShowImage = true;
-      this.AboutButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.AboutButton_Click);
-      // 
-      // ReportsButton
-      // 
-      this.ReportsButton.Image = global::CalDavSynchronizer.Properties.Resources.SyncReport;
-      this.ReportsButton.KeyTip = "RE";
-      this.ReportsButton.Label = "Reports";
-      this.ReportsButton.Name = "ReportsButton";
-      this.ReportsButton.ShowImage = true;
-      this.ReportsButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.ReportsButton_Click);
-      // 
-      // StatusesButton
-      // 
-      this.StatusesButton.Image = global::CalDavSynchronizer.Properties.Resources.report;
-      this.StatusesButton.KeyTip = "ST";
-      this.StatusesButton.Label = "Status";
-      this.StatusesButton.Name = "StatusesButton";
-      this.StatusesButton.ShowImage = true;
-      this.StatusesButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.StatusesButton_Click);
-      // 
-      // CalDavSynchronizerRibbon
-      // 
-      this.Name = "CalDavSynchronizerRibbon";
-      this.RibbonType = "Microsoft.Outlook.Explorer";
-      this.Tabs.Add(this.tab1);
-      this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.CalDavSynchronizerRibbon_Load);
-      this.tab1.ResumeLayout(false);
-      this.tab1.PerformLayout();
-      this.group1.ResumeLayout(false);
-      this.group1.PerformLayout();
-      this.ResumeLayout(false);
+            this.tab1 = this.Factory.CreateRibbonTab();
+            this.group1 = this.Factory.CreateRibbonGroup();
+            this.SynchronizeNowButton = this.Factory.CreateRibbonButton();
+            this.OptionsButton = this.Factory.CreateRibbonButton();
+            this.GeneralOptionsButton = this.Factory.CreateRibbonButton();
+            this.AboutButton = this.Factory.CreateRibbonButton();
+            this.ReportsButton = this.Factory.CreateRibbonButton();
+            this.StatusesButton = this.Factory.CreateRibbonButton();
+            this.tab1.SuspendLayout();
+            this.group1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // tab1
+            // 
+            this.tab1.Groups.Add(this.group1);
+            this.tab1.KeyTip = "CDS";
+            this.tab1.Label = "CalDav Synchronizer";
+            this.tab1.Name = "tab1";
+            // 
+            // group1
+            // 
+            this.group1.Items.Add(this.SynchronizeNowButton);
+            this.group1.Items.Add(this.OptionsButton);
+            this.group1.Items.Add(this.GeneralOptionsButton);
+            this.group1.Items.Add(this.AboutButton);
+            this.group1.Items.Add(this.ReportsButton);
+            this.group1.Items.Add(this.StatusesButton);
+            this.group1.Label = "CalDav Synchronizer";
+            this.group1.Name = "group1";
+            // 
+            // SynchronizeNowButton
+            // 
+            this.SynchronizeNowButton.Image = global::CalDavSynchronizer.Properties.Resources.Sync;
+            this.SynchronizeNowButton.KeyTip = "SN";
+            this.SynchronizeNowButton.Label = "Synchronize now";
+            this.SynchronizeNowButton.Name = "SynchronizeNowButton";
+            this.SynchronizeNowButton.ShowImage = true;
+            this.SynchronizeNowButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.SynchronizeNowButton_Click);
+            // 
+            // OptionsButton
+            // 
+            this.OptionsButton.Image = global::CalDavSynchronizer.Properties.Resources.Options;
+            this.OptionsButton.KeyTip = "SP";
+            this.OptionsButton.Label = "Synchronization Profiles";
+            this.OptionsButton.Name = "OptionsButton";
+            this.OptionsButton.ShowImage = true;
+            this.OptionsButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.OptionsButton_Click);
+            // 
+            // GeneralOptionsButton
+            // 
+            this.GeneralOptionsButton.Image = global::CalDavSynchronizer.Properties.Resources.GeneralOptions;
+            this.GeneralOptionsButton.KeyTip = "GO";
+            this.GeneralOptionsButton.Label = "General Options";
+            this.GeneralOptionsButton.Name = "GeneralOptionsButton";
+            this.GeneralOptionsButton.ShowImage = true;
+            this.GeneralOptionsButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.GeneralOptionsButton_Click);
+            // 
+            // AboutButton
+            // 
+            this.AboutButton.Image = global::CalDavSynchronizer.Properties.Resources.About;
+            this.AboutButton.KeyTip = "AB";
+            this.AboutButton.Label = "About";
+            this.AboutButton.Name = "AboutButton";
+            this.AboutButton.ShowImage = true;
+            this.AboutButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.AboutButton_Click);
+            // 
+            // ReportsButton
+            // 
+            this.ReportsButton.Image = global::CalDavSynchronizer.Properties.Resources.SyncReport;
+            this.ReportsButton.KeyTip = "RE";
+            this.ReportsButton.Label = "Reports";
+            this.ReportsButton.Name = "ReportsButton";
+            this.ReportsButton.ShowImage = true;
+            this.ReportsButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.ReportsButton_Click);
+            // 
+            // StatusesButton
+            // 
+            this.StatusesButton.Image = global::CalDavSynchronizer.Properties.Resources.report;
+            this.StatusesButton.KeyTip = "ST";
+            this.StatusesButton.Label = "Status";
+            this.StatusesButton.Name = "StatusesButton";
+            this.StatusesButton.ShowImage = true;
+            this.StatusesButton.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.StatusesButton_Click);
+            // 
+            // CalDavSynchronizerRibbon
+            // 
+            this.Name = "CalDavSynchronizerRibbon";
+            this.RibbonType = "Microsoft.Outlook.Explorer";
+            this.Tabs.Add(this.tab1);
+            this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.CalDavSynchronizerRibbon_Load);
+            this.tab1.ResumeLayout(false);
+            this.tab1.PerformLayout();
+            this.group1.ResumeLayout(false);
+            this.group1.PerformLayout();
+            this.ResumeLayout(false);
 
     }
 

@@ -504,6 +504,15 @@ namespace CalDavSynchronizer
             }
         }
 
+        public void ShowHanbiroLogin()
+        {
+
+        }
+        public void ShowHanbiroConfig()
+        {
+
+        }
+
         public async Task ShowOptionsAsync(Guid? initialVisibleProfile = null)
         {
             if (_currentVisibleOptionsFormOrNull == null)

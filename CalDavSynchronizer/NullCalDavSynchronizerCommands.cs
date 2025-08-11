@@ -38,6 +38,15 @@ namespace CalDavSynchronizer
             return Task.FromResult(0);
         }
 
+        public void ShowHanbiroLogin()
+        {
+
+        }
+        public void ShowHanbiroConfig()
+        {
+
+        }
+
         public void ShowAbout()
         {
         }

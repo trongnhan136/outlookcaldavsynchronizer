@@ -186,6 +186,7 @@ namespace CalDavSynchronizer
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(GeneralOptionsDataAccess.CultureName);
             return new IRibbonExtension[] {new CalDavSynchronizerRibbon()};
+            //return new IRibbonExtension[] { new HanbiroCaldavSynchronizerRibbon() };
         }
 
         #region VSTO generated code
