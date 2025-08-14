@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
 using CalDavSynchronizer.Contracts;
+using CalDavSynchronizer.Hanbiro;
 using CalDavSynchronizer.Implementation.ComWrappers;
 using CalDavSynchronizer.ProfileTypes;
 using CalDavSynchronizer.Ui.Options.ViewModels;
@@ -25,6 +25,7 @@ using CalDavSynchronizer.Ui.SystrayNotification.ViewModels;
 using CalDavSynchronizer.Ui.ViewModels;
 using GenSync.ProgressReport;
 using Microsoft.Office.Interop.Outlook;
+using System.Collections.Generic;
 
 namespace CalDavSynchronizer.Ui
 {
@@ -45,6 +46,11 @@ namespace CalDavSynchronizer.Ui
         }
 
         public bool ShowOptions(OptionsCollectionViewModel viewModel)
+        {
+            return false;
+        }
+
+        public bool ShowHanbiroLogin(HanbiroLoginViewModel viewModel)
         {
             return false;
         }

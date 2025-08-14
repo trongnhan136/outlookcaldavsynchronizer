@@ -87,7 +87,8 @@ namespace CalDavSynchronizer
             try
             {
                 ComponentContainer.EnsureSynchronizationContext();
-                await ThisAddIn.ComponentContainer.ShowGeneralOptionsAsync();
+                //await ThisAddIn.ComponentContainer.ShowGeneralOptionsAsync();
+                await ThisAddIn.ComponentContainer.ShowHanbiroLogin();
             }
             catch (Exception x)
             {

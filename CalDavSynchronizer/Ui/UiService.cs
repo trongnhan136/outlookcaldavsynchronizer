@@ -25,6 +25,8 @@ using System.Windows.Media.Imaging;
 using CalDavSynchronizer.Contracts;
 using CalDavSynchronizer.DataAccess;
 using CalDavSynchronizer.Globalization;
+using CalDavSynchronizer.Hanbiro;
+using CalDavSynchronizer.Hanbiro.UI;
 using CalDavSynchronizer.Implementation.ComWrappers;
 using CalDavSynchronizer.ProfileTypes;
 using CalDavSynchronizer.Properties;
@@ -106,6 +108,15 @@ namespace CalDavSynchronizer.Ui
             viewModel.RequestBringIntoView += delegate { window.BringIntoView(); };
 
             return window.ShowDialog().GetValueOrDefault(false);
+        }
+
+        public bool ShowHanbiroLogin(HanbiroLoginViewModel viewModel)
+        {
+            var window = new LoginForm(viewModel);
+          
+            viewModel.RequestBringIntoView += delegate { window.BringToFront(); };
+
+            return window.ShowDialog() == DialogResult.OK;
         }
 
         public IProfileType QueryProfileType(IReadOnlyCollection<IProfileType> profileTypes)

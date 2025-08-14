@@ -34,6 +34,9 @@ namespace CalDavSynchronizer.Contracts
         private const int c_saltLength = 17;
         private static Random s_random = new Random();
 
+
+        public string ExtraData { get; set; }
+
         public bool Inactive { get; set; }
         public string Name { get; set; }
         public Guid Id { get; set; }

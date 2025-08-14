@@ -38,13 +38,18 @@ namespace CalDavSynchronizer
             return Task.FromResult(0);
         }
 
-        public void ShowHanbiroLogin()
+        public bool hasCaldavAccount()
         {
-
+            return false;
         }
-        public void ShowHanbiroConfig()
-        {
 
+        public Task ShowHanbiroLogin()
+        {
+            return Task.FromResult(0);
+        }
+        public Task ShowHanbiroConfig()
+        {
+            return Task.FromResult(0);
         }
 
         public void ShowAbout()

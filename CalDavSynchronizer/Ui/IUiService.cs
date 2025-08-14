@@ -15,13 +15,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
 using CalDavSynchronizer.Contracts;
+using CalDavSynchronizer.Hanbiro;
 using CalDavSynchronizer.ProfileTypes;
 using CalDavSynchronizer.Ui.Options.ViewModels;
 using CalDavSynchronizer.Ui.Reports.ViewModels;
 using CalDavSynchronizer.Ui.SystrayNotification.ViewModels;
 using GenSync.ProgressReport;
+using System.Collections.Generic;
 
 namespace CalDavSynchronizer.Ui
 {
@@ -30,6 +31,8 @@ namespace CalDavSynchronizer.Ui
         void Show(ReportsViewModel reportsViewModel);
         void Show(TransientProfileStatusesViewModel viewModel);
         bool ShowOptions(OptionsCollectionViewModel viewModel);
+
+        bool ShowHanbiroLogin(HanbiroLoginViewModel viewModel);
         IProfileType QueryProfileType(IReadOnlyCollection<IProfileType> profileTypes);
         void ShowErrorDialog(string errorMessage, string title);
         void ShowOXInfoDialog();

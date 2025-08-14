@@ -15,6 +15,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using CalDavSynchronizer.Contracts;
+using CalDavSynchronizer.Globalization;
+using CalDavSynchronizer.Implementation;
+using CalDavSynchronizer.ProfileTypes;
+using CalDavSynchronizer.ProfileTypes.ConcreteTypes;
+using CalDavSynchronizer.Ui.Options.Models;
+using CalDavSynchronizer.Ui.Options.ViewModels.Mapping;
+using CalDavSynchronizer.Utilities;
+using log4net;
+using Microsoft.Office.Interop.Outlook;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,13 +34,8 @@ using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
-using CalDavSynchronizer.Contracts;
-using CalDavSynchronizer.Globalization;
-using CalDavSynchronizer.ProfileTypes;
-using CalDavSynchronizer.Ui.Options.Models;
-using CalDavSynchronizer.Ui.Options.ViewModels.Mapping;
-using log4net;
-using Microsoft.Office.Interop.Outlook;
+using System.Windows.Markup;
+using static Wacton.Unicolour.Cam;
 
 namespace CalDavSynchronizer.Ui.Options.ViewModels
 {
@@ -339,13 +344,69 @@ namespace CalDavSynchronizer.Ui.Options.ViewModels
                 _options.Add(profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(data)));
             }
 
+            if (_options.Count <= 0)
+            {
+                var folder = _optionTasks.GetDefaultCalendarFolderOrNull();
+                var option = new Contracts.Options
+                {
+                    ConflictResolution = ConflictResolution.Automatic,
+                    DaysToSynchronizeInTheFuture = 365,
+                    DaysToSynchronizeInThePast = 60,
+                    SynchronizationIntervalInMinutes = 0,
+                    SynchronizationMode = SynchronizationMode.MergeInBothDirections,
+                    Name = "Hanbiro",
+                    Id = Guid.NewGuid(),
+                    Inactive = false,
+                    PreemptiveAuthentication = true,
+                    ForceBasicAuthentication = true,
+                    ProxyOptions = new ProxyOptions() { ProxyUseDefault = true },
+                    IsChunkedSynchronizationEnabled = true,
+                    ChunkSize = 100,
+                    ServerAdapterType = ServerAdapterType.WebDavHttpClientBased,
+                    ProfileTypeOrNull = "Generic",
+                    CalenderUrl = "http://global3.hanbiro.com:15201/steve@global3.hanbiro.com/calendar/",
+                    UserName = "steve@global3.hanbiro.com",
+                    Password = SecureStringUtility.ToSecureString("hanbiro1!"),
+                    OutlookFolderEntryId = folder.EntryId,
+                    OutlookFolderStoreId = folder.StoreId,
+                    EnableChangeTriggeredSynchronization = true,
+                };
+                var profileType = _profileTypeRegistry.DetermineType(option);
+                var profileModelFactory = _profileModelFactoriesByType[profileType];
+                _options.Add(profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(option)));
+
+
+
+                // create Option data xong tu gan vao
+                //var type = _profileTypeRegistry.AllTypes.FirstOrDefault();
+                //var profileModelFactoryFactory = _profileModelFactoriesByType[type]; //GenericProfile
+                //var viewModel = profileModelFactoryFactory.CreateViewModel(profileModelFactoryFactory.CreateModelFromData(type.CreateOptions()));
+
+                //var generic = (CalDavSynchronizer.Ui.Options.ViewModels.GenericOptionsViewModel)viewModel;
+                //generic.ServerSettingsViewModel.
+
+                //_options.Add(viewModel);
+
+                //return new OptionsModel(OptionTasks, OutlookAccountPasswordProvider, data, GeneralOptions, this, false, SessionData, ServerSettingsDetector.Value);
+                //var calGeneric = new GenericOptionsViewModel(
+                //   this,
+                //   new ServerSettingsViewModel(model, _optionTasks, ViewOptions),
+                //   NullOptionTasks.Instance,
+                //   OptionsModel.DesignInstance,
+                //   new[] { "Cat1", "Cat2" },
+                //   OptionsCollectionViewModel.DesignViewOptions);
+            }
+
             var initialSelectedProfile =
                 (initialSelectedProfileId != null ? _options.FirstOrDefault(o => o.Model.Id == initialSelectedProfileId.Value) : null)
                 ?? _options.FirstOrDefault(o => o.IsActive)
                 ?? _options.FirstOrDefault();
 
             if (initialSelectedProfile != null)
+            {
                 initialSelectedProfile.IsSelected = true;
+            }
+               
 
             if (_options.Count > 0 && _expandAllSyncProfiles)
                 ExpandAll();

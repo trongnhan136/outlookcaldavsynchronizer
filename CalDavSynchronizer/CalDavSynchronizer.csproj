@@ -215,11 +215,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StringResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="HanbiroCaldavSynchronizerRibbon.cs">
+    <Compile Include="Hanbiro\HanbiroCaldavSynchronizerRibbon.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HanbiroCaldavSynchronizerRibbon.Designer.cs">
+    <Compile Include="Hanbiro\HanbiroCaldavSynchronizerRibbon.Designer.cs">
       <DependentUpon>HanbiroCaldavSynchronizerRibbon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hanbiro\HanbiroLoginViewModel.cs" />
+    <Compile Include="Hanbiro\HanbiroLoginWindow.xaml.cs">
+      <DependentUpon>HanbiroLoginWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Hanbiro\UI\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hanbiro\UI\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Implementation\Events\CalendarResourceResolver.cs" />
     <Compile Include="Implementation\Events\ICalendarResourceResolver.cs" />
@@ -780,8 +790,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>StringResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="HanbiroCaldavSynchronizerRibbon.resx">
+    <EmbeddedResource Include="Hanbiro\HanbiroCaldavSynchronizerRibbon.resx">
       <DependentUpon>HanbiroCaldavSynchronizerRibbon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hanbiro\UI\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ui\AddResourceForm.resx">
       <DependentUpon>AddResourceForm.cs</DependentUpon>
@@ -964,6 +977,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Hanbiro\HanbiroLoginWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ui\Options\Views\GeneralOptionsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

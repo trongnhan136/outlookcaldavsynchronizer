@@ -75,13 +75,19 @@ namespace CalDavSynchronizer
             ShowErrorMessage();
         }
 
-        public void ShowHanbiroLogin()
+        public bool hasCaldavAccount()
         {
-            ShowErrorMessage();
+            return false;
         }
-        public void ShowHanbiroConfig()
+        public Task ShowHanbiroLogin()
         {
             ShowErrorMessage();
+            return Task.FromResult(0);
+        }
+        public Task ShowHanbiroConfig()
+        {
+            ShowErrorMessage();
+            return Task.FromResult(0);
         }
 
         public void Dispose()

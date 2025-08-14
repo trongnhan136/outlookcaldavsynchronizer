@@ -41,6 +41,7 @@ namespace CalDavSynchronizer.Ui.Options.Models
         private readonly bool _isGoogle;
         private bool _isActive;
         private string _name;
+        private string _extraData;
 
         private bool _enableChangeTriggeredSynchronization;
         private OutlookFolderDescriptor _selectedFolderOrNull;
@@ -133,6 +134,13 @@ namespace CalDavSynchronizer.Ui.Options.Models
             get { return _name; }
             set { CheckedPropertyChange(ref _name, value); }
         }
+
+        public string ExtraData
+        {
+            get { return _extraData; }
+            set { _extraData = value; }
+        }
+        
 
         public bool EnableChangeTriggeredSynchronization
         {
@@ -326,6 +334,8 @@ namespace CalDavSynchronizer.Ui.Options.Models
             }
         }
 
+
+
         public bool UseGoogleNativeApiAvailable => _isGoogle && SelectedFolderOrNull?.DefaultItemType == OlItemType.olContactItem;
 
 
@@ -360,6 +370,7 @@ namespace CalDavSynchronizer.Ui.Options.Models
         private void InitializeData(Contracts.Options data)
         {
             _name = data.Name;
+            _extraData = data.ExtraData;
             _isActive = !data.Inactive;
 
             _enableChangeTriggeredSynchronization = data.EnableChangeTriggeredSynchronization;
@@ -429,6 +440,7 @@ namespace CalDavSynchronizer.Ui.Options.Models
             {
                 Id = Id,
                 Name = Name,
+                ExtraData = ExtraData,
                 Inactive = !IsActive,
                 EnableChangeTriggeredSynchronization = _enableChangeTriggeredSynchronization,
                 OutlookFolderEntryId = _selectedFolderOrNull?.EntryId,

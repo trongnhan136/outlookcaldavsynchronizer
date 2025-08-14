@@ -30,7 +30,9 @@ namespace CalDavSynchronizer
         void SynchronizeNowAsync();
         void ShowReports();
 
-        void ShowHanbiroLogin();
-        void ShowHanbiroConfig();
+        bool hasCaldavAccount();
+
+        Task ShowHanbiroLogin();
+        Task ShowHanbiroConfig();
     }
 }

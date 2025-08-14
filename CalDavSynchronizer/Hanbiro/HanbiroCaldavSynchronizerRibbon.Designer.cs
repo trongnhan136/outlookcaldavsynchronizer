@@ -59,11 +59,13 @@
             // 
             this.btLogin.Label = "Login";
             this.btLogin.Name = "btLogin";
+            this.btLogin.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogin_Click);
             // 
             // btConfig
             // 
             this.btConfig.Label = "Config";
             this.btConfig.Name = "btConfig";
+            this.btConfig.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btConfig_Click);
             // 
             // HanbiroCaldavSynchronizerRibbon
             // 
