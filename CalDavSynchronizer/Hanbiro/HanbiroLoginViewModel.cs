@@ -2,26 +2,20 @@
 using CalDavSynchronizer.Globalization;
 using CalDavSynchronizer.Implementation;
 using CalDavSynchronizer.ProfileTypes;
-using CalDavSynchronizer.ProfileTypes.ConcreteTypes;
 using CalDavSynchronizer.Ui;
 using CalDavSynchronizer.Ui.Options;
 using CalDavSynchronizer.Ui.Options.Models;
 using CalDavSynchronizer.Ui.Options.ViewModels;
-using CalDavSynchronizer.Ui.Options.ViewModels.Mapping;
 using CalDavSynchronizer.Utilities;
 using log4net;
-using Microsoft.Office.Interop.Outlook;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Markup;
-using static Wacton.Unicolour.Cam;
 
 namespace CalDavSynchronizer.Hanbiro
 {
@@ -118,7 +112,30 @@ namespace CalDavSynchronizer.Hanbiro
            
         }
 
-        public void doUpdateOptionWithData(String domain, String userId, String password)
+        private async Task<bool> TestConnectionAsync(OptionsModel model)
+        {
+            try
+            {
+                var result = await _optionTasks.TestHanbiroWebDavConnection(model);
+                if(result.Type == "error")
+                {
+                    MessageBox.Show(result.Message, OptionTasks.ConnectionTestCaption);
+                    return false;
+                }
+                return true;
+            }
+            catch (System.Exception x)
+            {
+                s_logger.Error("Exception while testing the connection.", x);
+                string message = null;
+                for (System.Exception ex = x; ex != null; ex = ex.InnerException)
+                    message += ex.Message + Environment.NewLine;
+                MessageBox.Show(message, OptionTasks.ConnectionTestCaption);
+            }
+            return false;
+        }
+
+        public async Task<bool> DoUpdateOptionWithData(String domain, String userId, String password)
         {
             if (_options.Count <= 0)
             {
@@ -151,8 +168,15 @@ namespace CalDavSynchronizer.Hanbiro
                 option.Password = SecureStringUtility.ToSecureString(password);
                 var profileType = _profileTypeRegistry.DetermineType(option);
                 var profileModelFactory = _profileModelFactoriesByType[profileType];
-                _options.Add(profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(option)));
+                var model = profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(option));
+              
+                _options.Add(model);
             }
+
+            var profileModel = _options[0];
+            //profileModel.Model.CalenderUrl = "";
+            var result = await TestConnectionAsync(profileModel.Model);
+            return result;
         }
 
         public ICommand SaveCommand { get; }

@@ -46,10 +46,18 @@ namespace CalDavSynchronizer
 
         public static event EventHandler SynchronizationFailedWhileReportsFormWasNotVisible;
         public static event EventHandler<SchedulerStatusEventArgs> StatusChanged;
+        public static event EventHandler SyncProfileChanged;
 
         private void OnSynchronizationFailedWhileReportsFormWasNotVisible()
         {
             var handler = SynchronizationFailedWhileReportsFormWasNotVisible;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
+        }
+
+        private void OnSyncProfileChanged()
+        {
+            var handler = SyncProfileChanged;
             if (handler != null)
                 handler(this, EventArgs.Empty);
         }
@@ -105,6 +113,7 @@ namespace CalDavSynchronizer
                 ComponentContainer = new ComponentContainer(Application, new GeneralOptionsDataAccess(), new ComWrapperFactory(), new ExceptionHandlingStrategy());
                 ComponentContainer.SynchronizationFailedWhileReportsFormWasNotVisible += ComponentContainer_SynchronizationFailedWhileReportsFormWasNotVisible;
                 ComponentContainer.StatusChanged += ComponentContainer_StatusChanged;
+                ComponentContainer.SyncProfileChanged += ComponentContainer_OnSyncProfileChanged;
 
                 CalDavSynchronizer.ComponentContainer.EnsureSynchronizationContext();
 
@@ -171,6 +180,11 @@ namespace CalDavSynchronizer
         void ComponentContainer_SynchronizationFailedWhileReportsFormWasNotVisible(object sender, EventArgs e)
         {
             OnSynchronizationFailedWhileReportsFormWasNotVisible();
+        }
+
+        void ComponentContainer_OnSyncProfileChanged(object sender, EventArgs e)
+        {
+            OnSyncProfileChanged();
         }
 
         public static bool IsOutlookVersionSmallerThan2010

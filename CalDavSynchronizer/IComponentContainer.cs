@@ -24,6 +24,7 @@ namespace CalDavSynchronizer
 {
     public interface IComponentContainer : ICalDavSynchronizerCommands, IDisposable
     {
+        event EventHandler SyncProfileChanged;
         event EventHandler SynchronizationFailedWhileReportsFormWasNotVisible;
         event EventHandler<SchedulerStatusEventArgs> StatusChanged;
 

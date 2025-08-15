@@ -146,6 +146,134 @@ namespace CalDavSynchronizer.Ui.Options
             }
         }
 
+        public static HanbiroTestResult GetDisplayTestReport(
+           TestResult result,
+           String url,
+           SynchronizationMode synchronizationMode,
+           string selectedSynchronizationModeDisplayName,
+           OlItemType outlookFolderType)
+        {
+            bool hasError = false;
+            bool hasWarning = false;
+            var errorMessageBuilder = new StringBuilder();
+
+            var isCalendar = result.ResourceType.HasFlag(ResourceType.Calendar);
+            var isAddressBook = result.ResourceType.HasFlag(ResourceType.AddressBook);
+            var isTaskList = result.ResourceType.HasFlag(ResourceType.TaskList);
+
+            if (isCalendar && isAddressBook)
+            {
+                errorMessageBuilder.AppendLine(Strings.Get($"- Resources which are a calendar and an addressbook are not valid!"));
+                hasError = true;
+            }
+
+            switch (outlookFolderType)
+            {
+                case OlItemType.olAppointmentItem:
+                    if (isCalendar)
+                    {
+                        if (!result.CalendarProperties.HasFlag(CalendarProperties.CalendarAccessSupported))
+                        {
+                            errorMessageBuilder.AppendLine(Strings.Get($"- The specified URL does not support calendar access."));
+                            hasError = true;
+                        }
+
+                        if (!result.CalendarProperties.HasFlag(CalendarProperties.SupportsCalendarQuery))
+                        {
+                            errorMessageBuilder.AppendLine(Strings.Get($"- The specified URL does not support calendar queries. Some features like time range filter may not work!"));
+                            hasWarning = true;
+                        }
+
+                        if (DoesModeRequireWriteableServerResource(synchronizationMode))
+                        {
+                            if (!result.AccessPrivileges.HasFlag(AccessPrivileges.Modify))
+                            {
+                                errorMessageBuilder.AppendFormat(
+                                    Strings.Get($"- The specified calendar is not writeable. Therefore it is not possible to use the synchronization mode '{selectedSynchronizationModeDisplayName}'."));
+                                errorMessageBuilder.AppendLine();
+                                hasError = true;
+                            }
+
+                            if (!result.AccessPrivileges.HasFlag(AccessPrivileges.Create))
+                            {
+                                errorMessageBuilder.AppendLine(Strings.Get($"- The specified calendar doesn't allow creation of appointments!"));
+                                hasWarning = true;
+                            }
+
+                            if (!result.AccessPrivileges.HasFlag(AccessPrivileges.Delete))
+                            {
+                                errorMessageBuilder.AppendLine(Strings.Get($"- The specified calendar doesn't allow deletion of appointments!"));
+                                hasWarning = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        errorMessageBuilder.AppendLine(Strings.Get($"- The specified URL is not a calendar!"));
+                        hasError = true;
+                    }
+
+                    break;
+
+                case OlItemType.olContactItem:
+                    if (isAddressBook)
+                    {
+                        if (!result.AddressBookProperties.HasFlag(AddressBookProperties.AddressBookAccessSupported))
+                        {
+                            errorMessageBuilder.AppendLine(Strings.Get($"- The specified URL does not support address books."));
+                            hasError = true;
+                        }
+
+                        if (DoesModeRequireWriteableServerResource(synchronizationMode))
+                        {
+                            if (!result.AccessPrivileges.HasFlag(AccessPrivileges.Modify))
+                            {
+                                errorMessageBuilder.AppendFormat(
+                                    Strings.Get(
+                                        $"- The specified address book is not writeable. Therefore it is not possible to use the synchronization mode '{selectedSynchronizationModeDisplayName}'."));
+                                errorMessageBuilder.AppendLine();
+                                hasError = true;
+                            }
+
+                            if (!result.AccessPrivileges.HasFlag(AccessPrivileges.Create))
+                            {
+                                errorMessageBuilder.AppendLine(Strings.Get($"- The specified address book doesn't allow creation of contacts!"));
+                                hasWarning = true;
+                            }
+
+                            if (!result.AccessPrivileges.HasFlag(AccessPrivileges.Delete))
+                            {
+                                errorMessageBuilder.AppendLine(Strings.Get($"- The specified address book doesn't allow deletion of contacts!"));
+                                hasWarning = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        errorMessageBuilder.AppendLine(Strings.Get($"- The specified URL is not an addressbook!"));
+                        hasError = true;
+                    }
+
+                    break;
+                case OlItemType.olTaskItem:
+                    if (!isTaskList)
+                    {
+                        errorMessageBuilder.AppendLine(Strings.Get($"- The specified URL is not an task list!"));
+                        hasError = true;
+                    }
+
+                    break;
+            }
+
+            if (hasError)
+                return new HanbiroTestResult("error", Strings.Get($"Connection test NOT successful:") + Environment.NewLine + errorMessageBuilder, url);
+            else if (hasWarning)
+                return new HanbiroTestResult("warning", Strings.Get($"Connection test successful BUT:") + Environment.NewLine + errorMessageBuilder, url);
+            else
+                return new HanbiroTestResult("success", Strings.Get($"Connection test successful."),url);
+        }
+
+
         public static void DisplayTestReport(
             TestResult result,
             SynchronizationMode synchronizationMode,
@@ -553,6 +681,141 @@ namespace CalDavSynchronizer.Ui.Options
 
             return newResourceUri.ToString();
         }
+
+
+        public async Task<HanbiroTestResult> TestHanbiroWebDavConnection(OptionsModel options)
+        {
+            string url = options.CalenderUrl;
+
+            if (options.SelectedFolderOrNull == null)
+            {
+                return new HanbiroTestResult("error", Strings.Get($"Please select an Outlook folder to specify the item type for this profile"), url);
+            }
+
+            var outlookFolderType = options.SelectedFolderOrNull.DefaultItemType;
+
+            string serverUrl = url;
+            StringBuilder errorMessageBuilder = new StringBuilder();
+
+            if (string.IsNullOrEmpty(url) && (!string.IsNullOrEmpty(options.EmailAddress) || !string.IsNullOrEmpty(options.UserName)))
+            {
+                var lookupEmail = !string.IsNullOrEmpty(options.EmailAddress) ? options.EmailAddress : options.UserName;
+
+                if (!ValidateEmailAddress(errorMessageBuilder, lookupEmail, true))
+                {
+                    return new HanbiroTestResult("error", errorMessageBuilder.ToString(), url);
+                }
+
+                bool success;
+                serverUrl = DoSrvLookup(lookupEmail, outlookFolderType, out success);
+            }
+
+
+            if (!ValidateWebDavUrl(serverUrl, errorMessageBuilder, false))
+            {
+                return new HanbiroTestResult("error", Strings.Get($"The CalDav/CardDav URL is invalid"), url);
+            }
+
+            var enteredUri = new Uri(serverUrl);
+            var webDavClient = options.CreateWebDavClient(enteredUri);
+
+            Uri autoDiscoveredUrl;
+
+            if (ConnectionTester.RequiresAutoDiscovery(enteredUri))
+            {
+                var autodiscoveryResult = await DoAutoDiscovery(enteredUri, webDavClient, true, true, outlookFolderType);
+                switch (autodiscoveryResult.Status)
+                {
+                    case AutoDiscoverResultStatus.UserCancelled:
+                        return new HanbiroTestResult("success","" ,url);
+                    case AutoDiscoverResultStatus.ResourceSelected:
+                        autoDiscoveredUrl = autodiscoveryResult.RessourceUrl;
+                        break;
+                    case AutoDiscoverResultStatus.NoResourcesFound:
+                        var autodiscoveryResult2 = await DoAutoDiscovery(enteredUri.AbsolutePath.EndsWith("/") ? enteredUri : new Uri(enteredUri.ToString() + "/"), webDavClient, false, false, outlookFolderType);
+                        switch (autodiscoveryResult2.Status)
+                        {
+                            case AutoDiscoverResultStatus.UserCancelled:
+                                return new HanbiroTestResult("success","", url);
+                            case AutoDiscoverResultStatus.ResourceSelected:
+                                autoDiscoveredUrl = autodiscoveryResult2.RessourceUrl;
+                                break;
+                            case AutoDiscoverResultStatus.NoResourcesFound:
+                                return new HanbiroTestResult("error", Strings.Get($"No resources were found via autodiscovery!"), url);
+                            default:
+                                throw new NotImplementedException(autodiscoveryResult2.Status.ToString());
+                        }
+
+                        break;
+                    default:
+                        throw new NotImplementedException(autodiscoveryResult.Status.ToString());
+                }
+            }
+            else
+            {
+                var result = await ConnectionTester.TestConnection(enteredUri, webDavClient);
+                if (result.ResourceType != ResourceType.None)
+                {
+                    FixSynchronizationMode(options, result);
+                    FixWebDavCollectionSync(options, result);
+                    UpdateServerEmailAndSchedulingSettings(options, result);
+
+                    return  GetDisplayTestReport(
+                        result,
+                        url,
+                        options.SynchronizationMode,
+                        _enumDisplayNameProvider.Get(options.SynchronizationMode),
+                        outlookFolderType);
+                }
+                else
+                {
+                    var autodiscoveryResult = await DoAutoDiscovery(enteredUri, webDavClient, false, false, outlookFolderType);
+                    switch (autodiscoveryResult.Status)
+                    {
+                        case AutoDiscoverResultStatus.UserCancelled:
+                            return new HanbiroTestResult("success", "", url);
+                        case AutoDiscoverResultStatus.ResourceSelected:
+                            autoDiscoveredUrl = autodiscoveryResult.RessourceUrl;
+                            break;
+                        case AutoDiscoverResultStatus.NoResourcesFound:
+                            var autodiscoveryResult2 = await DoAutoDiscovery(enteredUri, webDavClient, true, true, outlookFolderType);
+                            switch (autodiscoveryResult2.Status)
+                            {
+                                case AutoDiscoverResultStatus.UserCancelled:
+                                    return new HanbiroTestResult("success", "", url);
+                                case AutoDiscoverResultStatus.ResourceSelected:
+                                    autoDiscoveredUrl = autodiscoveryResult2.RessourceUrl;
+                                    break;
+                                case AutoDiscoverResultStatus.NoResourcesFound:
+                                    return new HanbiroTestResult("error", Strings.Get($"No resources were found via autodiscovery!"), url);
+                                  
+                                default:
+                                    throw new NotImplementedException(autodiscoveryResult2.Status.ToString());
+                            }
+
+                            break;
+                        default:
+                            throw new NotImplementedException(autodiscoveryResult.Status.ToString());
+                    }
+                }
+            }
+
+
+            var finalResult = await ConnectionTester.TestConnection(autoDiscoveredUrl, webDavClient);
+
+            FixSynchronizationMode(options, finalResult);
+            FixWebDavCollectionSync(options, finalResult);
+            UpdateServerEmailAndSchedulingSettings(options, finalResult);
+
+           return  GetDisplayTestReport(
+                finalResult,
+                autoDiscoveredUrl.ToString(),
+                options.SynchronizationMode,
+                _enumDisplayNameProvider.Get(options.SynchronizationMode),
+                outlookFolderType);
+        }
+
+
 
         public async Task<string> TestWebDavConnection(OptionsModel options)
         {

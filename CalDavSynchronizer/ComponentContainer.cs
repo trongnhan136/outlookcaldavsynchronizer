@@ -112,6 +112,7 @@ namespace CalDavSynchronizer
         private readonly IProfileTypeRegistry _profileTypeRegistry;
 
         public event EventHandler SynchronizationFailedWhileReportsFormWasNotVisible;
+        public event EventHandler SyncProfileChanged;
 
         public event EventHandler<SchedulerStatusEventArgs> StatusChanged
         {
@@ -527,6 +528,10 @@ namespace CalDavSynchronizer
                         s_logger.Info("Applying new options");
                         await ApplyNewOptions(options, newOptions, generalOptions, oneTimeTasks);
                         s_logger.Info("Applied new options");
+
+                        var handler = SyncProfileChanged;
+                        if (handler != null)
+                            handler(this, EventArgs.Empty);
                     }
                 }
                 finally

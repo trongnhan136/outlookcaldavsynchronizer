@@ -14,9 +14,23 @@ namespace CalDavSynchronizer
         {
             ThisAddIn.SynchronizationFailedWhileReportsFormWasNotVisible += SynchronizationFailedWhileReportsFormWasNotVisible;
             ThisAddIn.StatusChanged += ThisAddIn_StatusChanged;
-            ComponentContainer.EnsureSynchronizationContext();
+            ThisAddIn.SyncProfileChanged += ThisAddIn_SyncProfileChanged;
 
-            this.btLogin.Visible = !ThisAddIn.ComponentContainer.hasCaldavAccount();
+            updateControl();
+        }
+
+        private void updateControl()
+        {
+            ComponentContainer.EnsureSynchronizationContext();
+            var hasAccount = ThisAddIn.ComponentContainer.hasCaldavAccount();
+            this.btLogin.Visible = !hasAccount;
+            this.btLogout.Visible = hasAccount;
+            this.btConfig.Visible = hasAccount;
+        }
+
+        private void ThisAddIn_SyncProfileChanged(object sender, EventArgs e)
+        {
+            updateControl();
         }
 
         private void ThisAddIn_StatusChanged(object sender, Scheduling.SchedulerStatusEventArgs e)
@@ -32,7 +46,7 @@ namespace CalDavSynchronizer
         private async void btLogin_Click(object sender, RibbonControlEventArgs e)
         {
 
-            try
+            try 
             {
                 ComponentContainer.EnsureSynchronizationContext();
                 await ThisAddIn.ComponentContainer.ShowHanbiroLogin();
@@ -54,6 +68,11 @@ namespace CalDavSynchronizer
             {
                 ExceptionHandler.Instance.DisplayException(x, s_logger);
             }
+        }
+
+        private void btLogout_Click(object sender, RibbonControlEventArgs e)
+        {
+
         }
     }
 }

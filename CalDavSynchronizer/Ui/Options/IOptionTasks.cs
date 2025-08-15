@@ -32,6 +32,8 @@ namespace CalDavSynchronizer.Ui.Options
         Contracts.Options[] LoadOptions(string fileName);
         Task<string> TestGoogleConnection(OptionsModel options, string url);
         Task<string> TestWebDavConnection(OptionsModel options);
+
+        Task<HanbiroTestResult> TestHanbiroWebDavConnection(OptionsModel options);
         void ValidateBulkProfile(OptionsModel options, AccessPrivileges privileges, CalendarOwnerProperties ownerPropertiesOrNull);
 
         OutlookFolderDescriptor GetDefaultCalendarFolderOrNull();

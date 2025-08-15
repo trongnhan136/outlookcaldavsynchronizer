@@ -31,11 +31,17 @@ namespace CalDavSynchronizer
         {
             ThisAddIn.SynchronizationFailedWhileReportsFormWasNotVisible += SynchronizationFailedWhileReportsFormWasNotVisible;
             ThisAddIn.StatusChanged += ThisAddIn_StatusChanged;
+            ThisAddIn.SyncProfileChanged += ThisAddIn_SyncProfileChanged;
         }
 
         private void ThisAddIn_StatusChanged(object sender, Scheduling.SchedulerStatusEventArgs e)
         {
             SynchronizeNowButton.Enabled = !e.IsRunning;
+        }
+
+        private void ThisAddIn_SyncProfileChanged(object sender, EventArgs e)
+        {
+   
         }
 
         private void SynchronizationFailedWhileReportsFormWasNotVisible(object sender, EventArgs e)

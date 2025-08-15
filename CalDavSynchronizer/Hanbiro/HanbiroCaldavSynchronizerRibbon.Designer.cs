@@ -38,6 +38,7 @@
             this.group1 = this.Factory.CreateRibbonGroup();
             this.btLogin = this.Factory.CreateRibbonButton();
             this.btConfig = this.Factory.CreateRibbonButton();
+            this.btLogout = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -51,6 +52,7 @@
             // group1
             // 
             this.group1.Items.Add(this.btLogin);
+            this.group1.Items.Add(this.btLogout);
             this.group1.Items.Add(this.btConfig);
             this.group1.Label = "CalDav Synchronizer";
             this.group1.Name = "group1";
@@ -66,6 +68,12 @@
             this.btConfig.Label = "Config";
             this.btConfig.Name = "btConfig";
             this.btConfig.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btConfig_Click);
+            // 
+            // btLogout
+            // 
+            this.btLogout.Label = "Logout";
+            this.btLogout.Name = "btLogout";
+            this.btLogout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogout_Click);
             // 
             // HanbiroCaldavSynchronizerRibbon
             // 
@@ -87,6 +95,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btLogin;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btConfig;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btLogout;
     }
 
     partial class ThisRibbonCollection

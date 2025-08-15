@@ -93,6 +93,7 @@ namespace CalDavSynchronizer
 
         public event EventHandler SynchronizationFailedWhileReportsFormWasNotVisible;
         public event EventHandler<SchedulerStatusEventArgs> StatusChanged;
+        public event EventHandler SyncProfileChanged;
 
         public Task InitializeSchedulerAndStartAsync()
         {
@@ -122,6 +123,11 @@ namespace CalDavSynchronizer
         void OnStatusChanged(SchedulerStatusEventArgs e)
         {
             StatusChanged?.Invoke(this, e);
+        }
+
+        private void OnSyncProfileChanged()
+        {
+            SyncProfileChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

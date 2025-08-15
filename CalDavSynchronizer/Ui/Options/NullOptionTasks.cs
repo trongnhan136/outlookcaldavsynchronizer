@@ -66,7 +66,11 @@ namespace CalDavSynchronizer.Ui.Options
         {
             throw new NotImplementedException();
         }
-
+        public Task<HanbiroTestResult> TestHanbiroWebDavConnection(OptionsModel options)
+        {
+            throw new NotImplementedException();
+        }
+        
         public void ValidateBulkProfile(OptionsModel options, AccessPrivileges privileges, CalendarOwnerProperties ownerPropertiesOrNull)
         {
             throw new NotImplementedException();
