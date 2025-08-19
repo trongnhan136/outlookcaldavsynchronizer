@@ -15,8 +15,6 @@ namespace CalDavSynchronizer
             ThisAddIn.SynchronizationFailedWhileReportsFormWasNotVisible += SynchronizationFailedWhileReportsFormWasNotVisible;
             ThisAddIn.StatusChanged += ThisAddIn_StatusChanged;
             ThisAddIn.SyncProfileChanged += ThisAddIn_SyncProfileChanged;
-
-            updateControl();
         }
 
         private void updateControl()
@@ -62,7 +60,7 @@ namespace CalDavSynchronizer
             try
             {
                 ComponentContainer.EnsureSynchronizationContext();
-                await ThisAddIn.ComponentContainer.ShowHanbiroLogin();
+                await ThisAddIn.ComponentContainer.ShowHanbiroConfig();
             }
             catch (Exception x)
             {
@@ -72,7 +70,15 @@ namespace CalDavSynchronizer
 
         private void btLogout_Click(object sender, RibbonControlEventArgs e)
         {
-
+            try
+            {
+                ComponentContainer.EnsureSynchronizationContext();
+                ThisAddIn.ComponentContainer.LogoutHanbiroAccount();
+            }
+            catch (Exception x)
+            {
+                ExceptionHandler.Instance.DisplayException(x, s_logger);
+            }
         }
     }
 }

@@ -62,6 +62,12 @@ namespace CalDavSynchronizer
             return Task.FromResult(0);
         }
 
+        public Task LogoutHanbiroAccount()
+        {
+            ShowStartupMessage();
+            return Task.FromResult(0);
+        }
+
         public void ShowAbout()
         {
             ShowStartupMessage();

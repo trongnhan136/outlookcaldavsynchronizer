@@ -163,7 +163,7 @@ namespace CalDavSynchronizer.Hanbiro
                     EnableChangeTriggeredSynchronization = true,
                 };
                 option.ExtraData = domain;
-                option.CalenderUrl = String.Format("http://{0}:15201/{1}@{2}/calendar/", domain, userId, domain);
+                option.CalenderUrl = String.Format("https://{0}:15201/{1}@{2}/calendar/", domain, userId, domain);
                 option.UserName = String.Format("{0}@{1}", userId, domain);
                 option.Password = SecureStringUtility.ToSecureString(password);
                 var profileType = _profileTypeRegistry.DetermineType(option);
@@ -177,6 +177,14 @@ namespace CalDavSynchronizer.Hanbiro
             //profileModel.Model.CalenderUrl = "";
             var result = await TestConnectionAsync(profileModel.Model);
             return result;
+        }
+
+        public IOptionsViewModel selectedOption
+        {
+            get
+            {
+                return _options[0];
+            }
         }
 
         public ICommand SaveCommand { get; }

@@ -90,6 +90,12 @@ namespace CalDavSynchronizer
             return Task.FromResult(0);
         }
 
+        public Task LogoutHanbiroAccount()
+        {
+            ShowErrorMessage();
+            return Task.FromResult(0);
+        }
+
         public void Dispose()
         {
         }

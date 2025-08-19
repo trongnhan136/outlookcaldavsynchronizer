@@ -55,6 +55,11 @@ namespace CalDavSynchronizer.Ui
             return false;
         }
 
+        public bool ShowHanbiroConfig(HanbiroLoginViewModel viewModel)
+        {
+            return false;
+        }
+
         public void ShowErrorDialog(string errorMessage, string title)
         {
         }

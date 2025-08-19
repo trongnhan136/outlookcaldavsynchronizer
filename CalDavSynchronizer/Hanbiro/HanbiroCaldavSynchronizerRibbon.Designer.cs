@@ -37,8 +37,8 @@
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
             this.btLogin = this.Factory.CreateRibbonButton();
-            this.btConfig = this.Factory.CreateRibbonButton();
             this.btLogout = this.Factory.CreateRibbonButton();
+            this.btConfig = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -52,8 +52,8 @@
             // group1
             // 
             this.group1.Items.Add(this.btLogin);
-            this.group1.Items.Add(this.btLogout);
             this.group1.Items.Add(this.btConfig);
+            this.group1.Items.Add(this.btLogout);
             this.group1.Label = "CalDav Synchronizer";
             this.group1.Name = "group1";
             // 
@@ -63,17 +63,19 @@
             this.btLogin.Name = "btLogin";
             this.btLogin.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogin_Click);
             // 
-            // btConfig
-            // 
-            this.btConfig.Label = "Config";
-            this.btConfig.Name = "btConfig";
-            this.btConfig.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btConfig_Click);
-            // 
             // btLogout
             // 
             this.btLogout.Label = "Logout";
             this.btLogout.Name = "btLogout";
             this.btLogout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogout_Click);
+            // 
+            // btConfig
+            // 
+            this.btConfig.Image = global::CalDavSynchronizer.Properties.Resources.Options;
+            this.btConfig.Label = "Config";
+            this.btConfig.Name = "btConfig";
+            this.btConfig.ShowImage = true;
+            this.btConfig.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btConfig_Click);
             // 
             // HanbiroCaldavSynchronizerRibbon
             // 

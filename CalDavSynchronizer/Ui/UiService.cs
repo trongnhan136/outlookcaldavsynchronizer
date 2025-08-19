@@ -119,6 +119,16 @@ namespace CalDavSynchronizer.Ui
             return window.ShowDialog() == DialogResult.OK;
         }
 
+
+        public bool ShowHanbiroConfig(HanbiroLoginViewModel viewModel)
+        {
+            var window = new HanbiroAccountConfigForm(viewModel);
+
+            viewModel.RequestBringIntoView += delegate { window.BringToFront(); };
+
+            return window.ShowDialog() == DialogResult.OK;
+        }
+
         public IProfileType QueryProfileType(IReadOnlyCollection<IProfileType> profileTypes)
         {
             var viewModel = new SelectProfileViewModel(profileTypes, this);

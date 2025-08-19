@@ -143,6 +143,9 @@ namespace CalDavSynchronizer
 
             var generalOptions = _generalOptionsDataAccess.LoadOptions();
 
+            // NHANNT
+            generalOptions.EnableTrayIcon = false;
+
             _daslFilterProvider = new DaslFilterProvider(generalOptions.IncludeCustomMessageClasses);
 
             SetWpfLocale(generalOptions.CultureName);
@@ -546,9 +549,99 @@ namespace CalDavSynchronizer
                     _currentVisibleOptionsFormOrNull.ShowProfile(initialVisibleProfile.Value);
             }
         }
-        public Task ShowHanbiroConfig()
+
+        public async Task LogoutHanbiroAccount()
         {
-            return Task.CompletedTask;
+            var options = _optionsDataAccess.Load();
+            GeneralOptions generalOptions = _generalOptionsDataAccess.LoadOptions();
+            try
+            {
+                var newOptions = new Options[0];
+                var oneTimeTask = new OneTimeChangeCategoryTask[0];
+                s_logger.Info("Applying new options");
+                await ApplyNewOptions(options, newOptions, generalOptions, oneTimeTask);
+                s_logger.Info("Applied new options");
+
+                var handler = SyncProfileChanged;
+                if (handler != null)
+                    handler(this, EventArgs.Empty);
+            }
+            finally
+            {
+              
+            }
+        }
+        public async Task ShowHanbiroConfig()
+        {
+            if (_currentVisibleOptionsFormOrNull == null)
+            {
+                var options = _optionsDataAccess.Load();
+                if(options.Length <= 0)
+                {
+                    return;
+                }
+                GeneralOptions generalOptions = _generalOptionsDataAccess.LoadOptions();
+                try
+                {
+                    var newOptions = ShowHanbiroConfigWpfOptions( generalOptions, options, out var oneTimeTasks);
+
+                    if (newOptions != null)
+                    {
+                        s_logger.Info("Applying new options");
+                        await ApplyNewOptions(options, newOptions, generalOptions, oneTimeTasks);
+                        s_logger.Info("Applied new options");
+
+                        var handler = SyncProfileChanged;
+                        if (handler != null)
+                            handler(this, EventArgs.Empty);
+                    }
+                }
+                finally
+                {
+                    _currentVisibleOptionsFormOrNull = null;
+                }
+            }
+            else
+            {
+                _currentVisibleOptionsFormOrNull.BringToFront();
+            }
+        }
+
+        public Options[] ShowHanbiroConfigWpfOptions( GeneralOptions generalOptions, Options[] options, out OneTimeChangeCategoryTask[] oneTimeTasks)
+        {
+            var optionTasks = new OptionTasks(_session, EnumDisplayNameProvider.Instance, _outlookSession);
+
+            var viewOptions = new ViewOptions(generalOptions.EnableAdvancedView);
+            var categories = _outlookSession
+                .GetCategories()
+                .GroupBy(c => c.Name, _outlookSession.CategoryNameComparer)
+                .Select(g => g.First())
+                .ToArray();
+            var categoryNames = categories.Select(c => c.Name).ToArray();
+            OptionModelSessionData sessionData = new OptionModelSessionData(categories.ToDictionary(c => c.Name, _outlookSession.CategoryNameComparer));
+            var viewModel = new HanbiroLoginViewModel(
+                generalOptions.ExpandAllSyncProfiles,
+                GetProfileDataDirectory,
+                _uiService,
+                optionTasks,
+                _profileTypeRegistry,
+                (parent, type) => type.CreateModelFactory(parent, _outlookAccountPasswordProvider, categoryNames, optionTasks, generalOptions, viewOptions, sessionData),
+                viewOptions);
+
+            _currentVisibleOptionsFormOrNull = viewModel;
+
+            viewModel.SetOptionsCollection(options, null);
+
+            if (_uiService.ShowHanbiroConfig(viewModel))
+            {
+                oneTimeTasks = viewModel.GetOneTimeTasks();
+                return viewModel.GetOptionsCollection();
+            }
+            else
+            {
+                oneTimeTasks = null;
+                return null;
+            }
         }
 
         public Options[] ShowHanbiroWpfOptions(Guid? initialSelectedProfileId, GeneralOptions generalOptions, Options[] options, out OneTimeChangeCategoryTask[] oneTimeTasks)

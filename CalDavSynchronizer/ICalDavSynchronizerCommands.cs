@@ -34,5 +34,6 @@ namespace CalDavSynchronizer
 
         Task ShowHanbiroLogin();
         Task ShowHanbiroConfig();
+        Task LogoutHanbiroAccount();
     }
 }

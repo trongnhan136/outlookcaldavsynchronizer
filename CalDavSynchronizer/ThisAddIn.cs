@@ -115,6 +115,7 @@ namespace CalDavSynchronizer
                 ComponentContainer.StatusChanged += ComponentContainer_StatusChanged;
                 ComponentContainer.SyncProfileChanged += ComponentContainer_OnSyncProfileChanged;
 
+                OnSyncProfileChanged();
                 CalDavSynchronizer.ComponentContainer.EnsureSynchronizationContext();
 
                 s_logger.Info("Initializing component container.");
@@ -199,8 +200,8 @@ namespace CalDavSynchronizer
         protected override IRibbonExtension[] CreateRibbonObjects()
         {
             System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(GeneralOptionsDataAccess.CultureName);
-            return new IRibbonExtension[] {new CalDavSynchronizerRibbon()};
-            //return new IRibbonExtension[] { new HanbiroCaldavSynchronizerRibbon() };
+            //return new IRibbonExtension[] {new CalDavSynchronizerRibbon()};
+            return new IRibbonExtension[] { new HanbiroCaldavSynchronizerRibbon() };
         }
 
         #region VSTO generated code

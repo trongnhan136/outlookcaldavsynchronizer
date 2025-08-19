@@ -33,6 +33,8 @@ namespace CalDavSynchronizer.Ui
         bool ShowOptions(OptionsCollectionViewModel viewModel);
 
         bool ShowHanbiroLogin(HanbiroLoginViewModel viewModel);
+
+        bool ShowHanbiroConfig(HanbiroLoginViewModel viewModel);
         IProfileType QueryProfileType(IReadOnlyCollection<IProfileType> profileTypes);
         void ShowErrorDialog(string errorMessage, string title);
         void ShowOXInfoDialog();

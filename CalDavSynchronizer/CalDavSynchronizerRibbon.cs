@@ -93,8 +93,10 @@ namespace CalDavSynchronizer
             try
             {
                 ComponentContainer.EnsureSynchronizationContext();
-                //await ThisAddIn.ComponentContainer.ShowGeneralOptionsAsync();
-                await ThisAddIn.ComponentContainer.ShowHanbiroLogin();
+                await ThisAddIn.ComponentContainer.ShowGeneralOptionsAsync();
+                //await ThisAddIn.ComponentContainer.ShowHanbiroLogin();
+                //await ThisAddIn.ComponentContainer.LogoutHanbiroAccount();
+                //await ThisAddIn.ComponentContainer.ShowHanbiroConfig();
             }
             catch (Exception x)
             {
