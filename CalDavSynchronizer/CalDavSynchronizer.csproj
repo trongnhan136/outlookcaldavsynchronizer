@@ -132,6 +132,7 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -221,6 +222,7 @@
     <Compile Include="Hanbiro\HanbiroCaldavSynchronizerRibbon.Designer.cs">
       <DependentUpon>HanbiroCaldavSynchronizerRibbon.cs</DependentUpon>
     </Compile>
+    <Compile Include="Hanbiro\HanbiroCalDavSynchronizerToolbar.cs" />
     <Compile Include="Hanbiro\HanbiroLoginViewModel.cs" />
     <Compile Include="Hanbiro\HanbiroLoginWindow.xaml.cs">
       <DependentUpon>HanbiroLoginWindow.xaml</DependentUpon>
@@ -920,6 +922,8 @@
     <Resource Include="Resources\Import.png" />
     <Resource Include="Resources\ClearCache.png" />
     <None Include="Resources\ApplicationLogoLarge.png" />
+    <None Include="Resources\HanSettings.ico" />
+    <None Include="Resources\HanSetting.bmp" />
     <Content Include="Resources\LogoBanner.bmp" />
     <Resource Include="Resources\ExpandAll.png" />
     <Resource Include="Resources\ProfileLogos\logo_nextcloud.png" />

@@ -37,8 +37,8 @@
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
             this.btLogin = this.Factory.CreateRibbonButton();
-            this.btLogout = this.Factory.CreateRibbonButton();
             this.btConfig = this.Factory.CreateRibbonButton();
+            this.btLogout = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -59,23 +59,27 @@
             // 
             // btLogin
             // 
+            this.btLogin.Image = global::CalDavSynchronizer.Properties.Resources.HanLogin;
             this.btLogin.Label = "Login";
             this.btLogin.Name = "btLogin";
+            this.btLogin.ShowImage = true;
             this.btLogin.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogin_Click);
-            // 
-            // btLogout
-            // 
-            this.btLogout.Label = "Logout";
-            this.btLogout.Name = "btLogout";
-            this.btLogout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogout_Click);
             // 
             // btConfig
             // 
-            this.btConfig.Image = global::CalDavSynchronizer.Properties.Resources.Options;
+            this.btConfig.Image = global::CalDavSynchronizer.Properties.Resources.HanSettings;
             this.btConfig.Label = "Config";
             this.btConfig.Name = "btConfig";
             this.btConfig.ShowImage = true;
             this.btConfig.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btConfig_Click);
+            // 
+            // btLogout
+            // 
+            this.btLogout.Image = global::CalDavSynchronizer.Properties.Resources.HanLogout;
+            this.btLogout.Label = "Logout";
+            this.btLogout.Name = "btLogout";
+            this.btLogout.ShowImage = true;
+            this.btLogout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogout_Click);
             // 
             // HanbiroCaldavSynchronizerRibbon
             // 
