@@ -1,13 +1,17 @@
 ﻿using CalDavSynchronizer.Contracts;
 using CalDavSynchronizer.Globalization;
 using CalDavSynchronizer.Implementation;
+using CalDavSynchronizer.Implementation.ComWrappers;
 using CalDavSynchronizer.ProfileTypes;
+using CalDavSynchronizer.Properties;
 using CalDavSynchronizer.Ui;
 using CalDavSynchronizer.Ui.Options;
 using CalDavSynchronizer.Ui.Options.Models;
 using CalDavSynchronizer.Ui.Options.ViewModels;
 using CalDavSynchronizer.Utilities;
+using Google.GData.Extensions;
 using log4net;
+using Microsoft.Office.Interop.Outlook;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -135,11 +139,50 @@ namespace CalDavSynchronizer.Hanbiro
             return false;
         }
 
+        private OutlookFolderDescriptor CreateCalendarFolder(string newCalendarName)
+        {
+            GenericComObjectWrapper<Folder> defaultCalendarFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar) as Folder);
+            GenericComObjectWrapper<Folder> newCalendarFolder = null;
+            try
+            {
+                // Use existing folder if it does exist
+                newCalendarFolder = new GenericComObjectWrapper<Folder>(defaultCalendarFolder.Inner.Folders[newCalendarName] as Folder);
+            }
+            catch
+            {
+                // Create missing folder
+                newCalendarFolder = new GenericComObjectWrapper<Folder>(defaultCalendarFolder.Inner.Folders.Add(newCalendarName, OlDefaultFolders.olFolderCalendar) as Folder);
+                // Make sure it has not been renamed to "name (this computer only)"
+                newCalendarFolder.Inner.Name = newCalendarName;
+            }
+
+            // use the selected folder for syncing with kolab
+            return new OutlookFolderDescriptor(newCalendarFolder.Inner.EntryID, newCalendarFolder.Inner.StoreID, newCalendarFolder.Inner.DefaultItemType, newCalendarFolder.Inner.Name, 0);
+        }
+
+
+        private OutlookFolderDescriptor CreateContactFolder(string newAddressBookName)
+        {
+            GenericComObjectWrapper<Folder> defaultAddressBookFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderContacts) as Folder);
+            GenericComObjectWrapper<Folder> newAddressBookFolder = null;
+            try
+            {
+                newAddressBookFolder = new GenericComObjectWrapper<Folder>(defaultAddressBookFolder.Inner.Folders[newAddressBookName] as Folder);
+            }
+            catch
+            {
+                newAddressBookFolder = new GenericComObjectWrapper<Folder>(defaultAddressBookFolder.Inner.Folders.Add(newAddressBookName, OlDefaultFolders.olFolderContacts) as Folder);
+                newAddressBookFolder.Inner.Name = newAddressBookName;
+            }
+            return new OutlookFolderDescriptor(newAddressBookFolder.Inner.EntryID, newAddressBookFolder.Inner.StoreID, newAddressBookFolder.Inner.DefaultItemType, newAddressBookFolder.Inner.Name, 0);
+        }
+
         public async Task<bool> DoUpdateOptionWithData(String domain, String userId, String password)
         {
+            string folderName = userId + " (" + domain + ")";
             if (_options.Count <= 0)
             {
-                var folder = _optionTasks.GetDefaultCalendarFolderOrNull();
+                var folder = CreateCalendarFolder(folderName);
                 var option = new Contracts.Options
                 {
                     ConflictResolution = ConflictResolution.Automatic,
