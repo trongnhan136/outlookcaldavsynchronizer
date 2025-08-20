@@ -145,6 +145,8 @@ namespace CalDavSynchronizer
 
             // NHANNT
             generalOptions.EnableTrayIcon = false;
+            generalOptions.ShouldCheckForNewerVersions = false;
+            // END NHANNT
 
             _daslFilterProvider = new DaslFilterProvider(generalOptions.IncludeCustomMessageClasses);
 
