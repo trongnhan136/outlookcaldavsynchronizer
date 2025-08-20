@@ -39,6 +39,7 @@
             this.btLogin = this.Factory.CreateRibbonButton();
             this.btConfig = this.Factory.CreateRibbonButton();
             this.btLogout = this.Factory.CreateRibbonButton();
+            this.btSyncNow = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -52,6 +53,7 @@
             // group1
             // 
             this.group1.Items.Add(this.btLogin);
+            this.group1.Items.Add(this.btSyncNow);
             this.group1.Items.Add(this.btConfig);
             this.group1.Items.Add(this.btLogout);
             this.group1.Label = "CalDav Synchronizer";
@@ -81,6 +83,14 @@
             this.btLogout.ShowImage = true;
             this.btLogout.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btLogout_Click);
             // 
+            // btSyncNow
+            // 
+            this.btSyncNow.Image = global::CalDavSynchronizer.Properties.Resources.Sync;
+            this.btSyncNow.Label = "Sync Now";
+            this.btSyncNow.Name = "btSyncNow";
+            this.btSyncNow.ShowImage = true;
+            this.btSyncNow.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btSyncNow_Click);
+            // 
             // HanbiroCaldavSynchronizerRibbon
             // 
             this.Name = "HanbiroCaldavSynchronizerRibbon";
@@ -102,6 +112,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btLogin;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btConfig;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btLogout;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btSyncNow;
     }
 
     partial class ThisRibbonCollection

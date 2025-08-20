@@ -130,6 +130,7 @@ namespace CalDavSynchronizer.Hanbiro.UI
             this.Controls.Add(this.lbDomain);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "LoginForm";
             this.Text = "Login";
             this.ResumeLayout(false);

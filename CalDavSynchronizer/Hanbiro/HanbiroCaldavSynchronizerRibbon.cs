@@ -22,6 +22,7 @@ namespace CalDavSynchronizer
             ComponentContainer.EnsureSynchronizationContext();
             var hasAccount = ThisAddIn.ComponentContainer.hasCaldavAccount();
             this.btLogin.Visible = !hasAccount;
+            this.btSyncNow.Visible = hasAccount;
             this.btLogout.Visible = hasAccount;
             this.btConfig.Visible = hasAccount;
         }
@@ -33,7 +34,7 @@ namespace CalDavSynchronizer
 
         private void ThisAddIn_StatusChanged(object sender, Scheduling.SchedulerStatusEventArgs e)
         {
-            //SynchronizeNowButton.Enabled = !e.IsRunning;
+            btSyncNow.Enabled = !e.IsRunning;
         }
 
         private void SynchronizationFailedWhileReportsFormWasNotVisible(object sender, EventArgs e)
@@ -74,6 +75,19 @@ namespace CalDavSynchronizer
             {
                 ComponentContainer.EnsureSynchronizationContext();
                 ThisAddIn.ComponentContainer.LogoutHanbiroAccount();
+            }
+            catch (Exception x)
+            {
+                ExceptionHandler.Instance.DisplayException(x, s_logger);
+            }
+        }
+
+        private void btSyncNow_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                ComponentContainer.EnsureSynchronizationContext();
+                ThisAddIn.ComponentContainer.SynchronizeNowAsync();
             }
             catch (Exception x)
             {

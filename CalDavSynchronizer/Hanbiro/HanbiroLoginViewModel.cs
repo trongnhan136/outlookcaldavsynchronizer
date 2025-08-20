@@ -17,8 +17,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace CalDavSynchronizer.Hanbiro
@@ -177,58 +179,121 @@ namespace CalDavSynchronizer.Hanbiro
             return new OutlookFolderDescriptor(newAddressBookFolder.Inner.EntryID, newAddressBookFolder.Inner.StoreID, newAddressBookFolder.Inner.DefaultItemType, newAddressBookFolder.Inner.Name, 0);
         }
 
+
+        private Contracts.Options CreateNormalOption(string name, OutlookFolderDescriptor folder)
+        {
+            return new Contracts.Options
+            {
+                ConflictResolution = ConflictResolution.Automatic,
+                DaysToSynchronizeInTheFuture = 365,
+                DaysToSynchronizeInThePast = 60,
+                SynchronizationIntervalInMinutes = 0,
+                SynchronizationMode = SynchronizationMode.MergeInBothDirections,
+                Name = name,
+                Id = Guid.NewGuid(),
+                Inactive = false,
+                PreemptiveAuthentication = true,
+                ForceBasicAuthentication = true,
+                ProxyOptions = new ProxyOptions() { ProxyUseDefault = true },
+                IsChunkedSynchronizationEnabled = true,
+                ChunkSize = 100,
+                ServerAdapterType = ServerAdapterType.WebDavHttpClientBased,
+                ProfileTypeOrNull = "Generic",
+
+                OutlookFolderEntryId = folder.EntryId,
+                OutlookFolderStoreId = folder.StoreId,
+                EnableChangeTriggeredSynchronization = true,
+            };
+        }
+        private IOptionsViewModel CreateCalendarProfile(string folderName, string baseUrl,string userName, SecureString pass)
+        {
+            var folder = CreateCalendarFolder(folderName);
+            var option = CreateNormalOption("calendar_" + folderName, folder);
+            option.ExtraData = baseUrl;
+            option.CalenderUrl = String.Format("{0}/calendar/", baseUrl);
+            option.UserName = userName;
+            option.Password = pass;
+            var profileType = _profileTypeRegistry.DetermineType(option);
+            var profileModelFactory = _profileModelFactoriesByType[profileType];
+            var model = profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(option));
+            return model;
+        }
+
+        private IOptionsViewModel CreateCardProfile(string folderName, string baseUrl, string userName, SecureString pass)
+        {
+            var folder = CreateContactFolder(folderName);
+            var option = CreateNormalOption("card_" + folderName, folder);
+            option.ExtraData = baseUrl;
+            option.CalenderUrl = String.Format("{0}/card/", baseUrl);
+            option.UserName = userName;
+            option.Password = pass;
+            var profileType = _profileTypeRegistry.DetermineType(option);
+            var profileModelFactory = _profileModelFactoriesByType[profileType];
+            var model = profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(option));
+            return model;
+        }
+
+        public IOptionsViewModel FindCalendarProfile()
+        {
+            var results = _options.Where(n => n.Model.CalenderUrl.EndsWith("/calendar/")).ToList();
+            if (results.Count > 0)
+            {
+                return results[0];
+            }
+            return null;
+        }
+
+        public IOptionsViewModel FindContactProfile()
+        {
+            var results = _options.Where(n => n.Model.CalenderUrl.EndsWith("/card/")).ToList();
+            if (results.Count > 0)
+            {
+                return results[0];
+            }
+            return null;
+        }
+
+        public IOptionsViewModel CurrentHanProfile { get
+            {
+                var p = FindCalendarProfile();
+                if (p == null)
+                {
+                    p = FindContactProfile();
+                }
+                return p;
+            } 
+        }
+
         public async Task<bool> DoUpdateOptionWithData(String domain, String userId, String password)
         {
             string folderName = userId + " (" + domain + ")";
-            if (_options.Count <= 0)
+            string baseUrl = String.Format("https://{0}:15201/{1}@{2}", domain, userId, domain);
+            var passwordSec = SecureStringUtility.ToSecureString(password);
+            var userName = String.Format("{0}@{1}", userId, domain);
+
+            var calendarProfile = FindCalendarProfile();
+            if(calendarProfile == null)
             {
-                var folder = CreateCalendarFolder(folderName);
-                var option = new Contracts.Options
-                {
-                    ConflictResolution = ConflictResolution.Automatic,
-                    DaysToSynchronizeInTheFuture = 365,
-                    DaysToSynchronizeInThePast = 60,
-                    SynchronizationIntervalInMinutes = 0,
-                    SynchronizationMode = SynchronizationMode.MergeInBothDirections,
-                    Name = domain,
-                    Id = Guid.NewGuid(),
-                    Inactive = false,
-                    PreemptiveAuthentication = true,
-                    ForceBasicAuthentication = true,
-                    ProxyOptions = new ProxyOptions() { ProxyUseDefault = true },
-                    IsChunkedSynchronizationEnabled = true,
-                    ChunkSize = 100,
-                    ServerAdapterType = ServerAdapterType.WebDavHttpClientBased,
-                    ProfileTypeOrNull = "Generic",
-                    
-                    OutlookFolderEntryId = folder.EntryId,
-                    OutlookFolderStoreId = folder.StoreId,
-                    EnableChangeTriggeredSynchronization = true,
-                };
-                option.ExtraData = domain;
-                option.CalenderUrl = String.Format("https://{0}:15201/{1}@{2}/calendar/", domain, userId, domain);
-                option.UserName = String.Format("{0}@{1}", userId, domain);
-                option.Password = SecureStringUtility.ToSecureString(password);
-                var profileType = _profileTypeRegistry.DetermineType(option);
-                var profileModelFactory = _profileModelFactoriesByType[profileType];
-                var model = profileModelFactory.CreateViewModel(profileModelFactory.CreateModelFromData(option));
-              
-                _options.Add(model);
+                calendarProfile = CreateCalendarProfile(folderName, baseUrl, userName, passwordSec);
+                _options.Add(calendarProfile);
             }
 
-            var profileModel = _options[0];
-            //profileModel.Model.CalenderUrl = "";
-            var result = await TestConnectionAsync(profileModel.Model);
+            var cardProfile = FindContactProfile();
+            if (cardProfile == null)
+            {
+                cardProfile = CreateCardProfile(folderName, baseUrl, userName, passwordSec);
+                _options.Add(cardProfile);
+            }
+
+            var result = await TestConnectionAsync(calendarProfile.Model);
+            if (result)
+            {
+                result = await TestConnectionAsync(cardProfile.Model);
+            }
             return result;
         }
 
-        public IOptionsViewModel selectedOption
-        {
-            get
-            {
-                return _options[0];
-            }
-        }
+
 
         public ICommand SaveCommand { get; }
 

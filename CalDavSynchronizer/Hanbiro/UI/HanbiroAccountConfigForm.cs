@@ -23,15 +23,29 @@ namespace CalDavSynchronizer.Hanbiro.UI
             InitializeComponent();
             this._viewModel = viewModel;
 
+            var currentProfile = viewModel.CurrentHanProfile;
+
             cbSyncInterval.DataSource = AvailableSyncIntervals;
             cbSyncInterval.DisplayMember = "Name";
             cbSyncInterval.ValueMember = "Value";
-            cbSyncInterval.SelectedValue = viewModel.selectedOption.Model.SynchronizationIntervalInMinutes;
+            cbSyncInterval.SelectedValue = currentProfile != null ? currentProfile.Model.SynchronizationIntervalInMinutes : 0;
         }
 
         private void btOK_Click(object sender, EventArgs e)
         {
-            _viewModel.selectedOption.Model.SynchronizationIntervalInMinutes = (int)cbSyncInterval.SelectedValue;
+            var calendarProfile = _viewModel.FindCalendarProfile();
+            var cardProfile = _viewModel.FindContactProfile();
+
+            if(calendarProfile != null)
+            {
+                calendarProfile.Model.SynchronizationIntervalInMinutes = (int)cbSyncInterval.SelectedValue;
+            }
+
+            if (cardProfile != null)
+            {
+                cardProfile.Model.SynchronizationIntervalInMinutes = (int)cbSyncInterval.SelectedValue;
+            }
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
