@@ -38,7 +38,9 @@ namespace CalDavSynchronizer
     {
         private static readonly ILog s_logger = LogManager.GetLogger(MethodInfo.GetCurrentMethod().DeclaringType);
 
-        private CalDavSynchronizerToolBar _calDavSynchronizerToolBar; // Pierre-Marie Baty -- only for Outlook < 2010
+        //private CalDavSynchronizerToolBar _calDavSynchronizerToolBar; // Pierre-Marie Baty -- only for Outlook < 2010
+        private HanbiroCalDavSynchronizerToolbar _hanbiroCalDavSynchronizerToolBar; // Pierre-Marie Baty -- only for Outlook < 2010
+
         private Explorers _explorers;
         private Explorer _activeExplorer;
         public static IComponentContainer ComponentContainer { get; private set; }
@@ -60,6 +62,11 @@ namespace CalDavSynchronizer
             var handler = SyncProfileChanged;
             if (handler != null)
                 handler(this, EventArgs.Empty);
+
+            if(_hanbiroCalDavSynchronizerToolBar != null)
+            {
+                _hanbiroCalDavSynchronizerToolBar.updateControl();
+            }
         }
 
         private void ThisAddIn_Startup(object sender, EventArgs e)
@@ -139,20 +146,31 @@ namespace CalDavSynchronizer
 
             if (_activeExplorer != null)
             {
+                //// For every explorer there has to be a toolbar created, but only the first toolbar is allowed to have wired events and only a reference to the first toolbar is stored
+                //var calDavSynchronizerToolBar = new CalDavSynchronizerToolBar(_activeExplorer, missing, _calDavSynchronizerToolBar == null);
+                //calDavSynchronizerToolBar.Settings = GeneralOptionsDataAccess.LoadToolBarSettings();
+                //if (_calDavSynchronizerToolBar == null)
+                //{
+                //    _calDavSynchronizerToolBar = calDavSynchronizerToolBar;
+                //    ((ExplorerEvents_10_Event) _activeExplorer).Close += FirstExplorer_Close;
+                //}
+
+
                 // For every explorer there has to be a toolbar created, but only the first toolbar is allowed to have wired events and only a reference to the first toolbar is stored
-                var calDavSynchronizerToolBar = new CalDavSynchronizerToolBar(_activeExplorer, missing, _calDavSynchronizerToolBar == null);
-                calDavSynchronizerToolBar.Settings = GeneralOptionsDataAccess.LoadToolBarSettings();
-                if (_calDavSynchronizerToolBar == null)
+                var hanCalDavSynchronizerToolBar = new HanbiroCalDavSynchronizerToolbar(_activeExplorer, missing, _hanbiroCalDavSynchronizerToolBar == null);
+                hanCalDavSynchronizerToolBar.Settings = GeneralOptionsDataAccess.LoadToolBarSettings();
+                if (_hanbiroCalDavSynchronizerToolBar == null)
                 {
-                    _calDavSynchronizerToolBar = calDavSynchronizerToolBar;
-                    ((ExplorerEvents_10_Event) _activeExplorer).Close += FirstExplorer_Close;
+                    _hanbiroCalDavSynchronizerToolBar = hanCalDavSynchronizerToolBar;
+                    ((ExplorerEvents_10_Event)_activeExplorer).Close += FirstExplorer_Close;
                 }
             }
         }
 
         private void FirstExplorer_Close()
         {
-            GeneralOptionsDataAccess.SaveToolBarSettings(_calDavSynchronizerToolBar.Settings);
+            //GeneralOptionsDataAccess.SaveToolBarSettings(_calDavSynchronizerToolBar.Settings);
+            GeneralOptionsDataAccess.SaveToolBarSettings(_hanbiroCalDavSynchronizerToolBar.Settings);
         }
 
         private void Explorers_NewExplorer(Explorer newExplorer)

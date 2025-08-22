@@ -143,7 +143,7 @@ namespace CalDavSynchronizer
 
             var generalOptions = _generalOptionsDataAccess.LoadOptions();
 
-            // NHANNT
+            // NHANNT 
             generalOptions.EnableTrayIcon = false;
             generalOptions.ShouldCheckForNewerVersions = false;
             // END NHANNT
