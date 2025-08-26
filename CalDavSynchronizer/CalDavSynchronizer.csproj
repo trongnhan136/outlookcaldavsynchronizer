@@ -857,6 +857,7 @@
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>
     </Compile>
+    <None Include="hanbiro.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>
     </None>
@@ -1116,10 +1117,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>CalDavSynchronizer_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>hanbiro.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>C64F5AE79E8B1A40A279F12DEFE9EC77F63456C1</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>810208D71ABFFABA49FA4A81E982AB29D10A68B7</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestTimestampUrl>http://timestamp.comodoca.com/rfc3161</ManifestTimestampUrl>
