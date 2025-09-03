@@ -114,6 +114,7 @@ namespace CalDavSynchronizer.Hanbiro.UI
             this.txtPassword.Size = new System.Drawing.Size(289, 22);
             this.txtPassword.TabIndex = 6;
             this.txtPassword.UseSystemPasswordChar = true;
+            this.txtPassword.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPassword_KeyDown);
             // 
             // LoginForm
             // 

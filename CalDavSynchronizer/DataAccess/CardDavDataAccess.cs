@@ -421,6 +421,7 @@ namespace CalDavSynchronizer.DataAccess
 
             // ReSharper disable once LoopCanBeConvertedToQuery
             // ReSharper disable once PossibleNullReferenceException
+            // NHANNT DEBUG
             foreach (XmlElement responseElement in responseNodes)
             {
                 var urlNode = responseElement.SelectSingleNode("D:href", responseXml.XmlNamespaceManager);

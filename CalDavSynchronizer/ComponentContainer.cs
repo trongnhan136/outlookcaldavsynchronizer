@@ -537,6 +537,12 @@ namespace CalDavSynchronizer
                         var handler = SyncProfileChanged;
                         if (handler != null)
                             handler(this, EventArgs.Empty);
+
+
+                        // Wait 1 second
+                        await Task.Delay(1000);
+
+                        SynchronizeNowAsync();
                     }
                 }
                 finally

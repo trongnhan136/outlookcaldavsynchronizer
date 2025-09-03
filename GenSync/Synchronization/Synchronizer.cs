@@ -167,6 +167,8 @@ namespace GenSync.Synchronization
                     (var aStates, var newAToken) = await aStatesTask;
                     (var bStates, var newBToken) = await bStatesTask;
 
+                    // NHANNT DEBUG
+
                     await Synchronize(
                         totalProgress,
                         knownEntityRelations,
@@ -390,6 +392,7 @@ namespace GenSync.Synchronization
                         {
                             using (var progress = chunkLogger.StartProcessing(aJobs.TotalJobCount + bJobs.TotalJobCount))
                             {
+                                // NHANNT DEBUG
                                 await _atypeWriteRepository.PerformOperations(aJobs.CreateJobs, aJobs.UpdateJobs, aJobs.DeleteJobs, progress, synchronizationContext);
                                 await _btypeWriteRepository.PerformOperations(bJobs.CreateJobs, bJobs.UpdateJobs, bJobs.DeleteJobs, progress, synchronizationContext);
                             }

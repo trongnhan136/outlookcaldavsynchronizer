@@ -815,6 +815,7 @@ namespace CalDavSynchronizer.DataAccess
         }
 
 
+        // NHANNT DEBUG
         private IReadOnlyList<EntityVersion<WebResourceName, string>> ExtractVersions(XmlDocumentWithNamespaceManager responseXml)
         {
             var responseNodes = responseXml.XmlDocument.SelectNodes("/D:multistatus/D:response", responseXml.XmlNamespaceManager);

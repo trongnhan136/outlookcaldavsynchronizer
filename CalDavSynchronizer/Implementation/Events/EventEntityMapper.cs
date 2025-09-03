@@ -1582,6 +1582,7 @@ namespace CalDavSynchronizer.Implementation.Events
 
         private const int s_mailtoSchemaLength = 7; // length of "mailto:"
 
+        // NHANNT create map from remote to local
         public Task<IAppointmentItemWrapper> Map2To1(IICalendar sourceCalendar, IAppointmentItemWrapper target, IEntitySynchronizationLogger logger, IEventSynchronizationContext context)
         {
             IEvent sourceMasterEvent = null;

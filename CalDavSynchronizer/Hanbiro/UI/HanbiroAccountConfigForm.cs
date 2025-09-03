@@ -29,6 +29,9 @@ namespace CalDavSynchronizer.Hanbiro.UI
             cbSyncInterval.DisplayMember = "Name";
             cbSyncInterval.ValueMember = "Value";
             cbSyncInterval.SelectedValue = currentProfile != null ? currentProfile.Model.SynchronizationIntervalInMinutes : 0;
+
+            tbPastDay.Text = currentProfile.Model.DaysToSynchronizeInThePast.ToString();
+            tbFutureDay.Text = currentProfile.Model.DaysToSynchronizeInTheFuture.ToString();
         }
 
         private void btOK_Click(object sender, EventArgs e)
@@ -39,15 +42,35 @@ namespace CalDavSynchronizer.Hanbiro.UI
             if(calendarProfile != null)
             {
                 calendarProfile.Model.SynchronizationIntervalInMinutes = (int)cbSyncInterval.SelectedValue;
+                calendarProfile.Model.DaysToSynchronizeInThePast = int.Parse(tbPastDay.Text);
+                calendarProfile.Model.DaysToSynchronizeInTheFuture = int.Parse(tbFutureDay.Text);
             }
 
             if (cardProfile != null)
             {
                 cardProfile.Model.SynchronizationIntervalInMinutes = (int)cbSyncInterval.SelectedValue;
+                cardProfile.Model.DaysToSynchronizeInThePast = int.Parse(tbPastDay.Text);
+                cardProfile.Model.DaysToSynchronizeInTheFuture = int.Parse(tbFutureDay.Text);
             }
 
             this.DialogResult = DialogResult.OK;
             this.Close();
+        }
+
+        private void tbPastDay_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void tbFutureDay_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

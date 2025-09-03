@@ -186,7 +186,7 @@ namespace CalDavSynchronizer.Hanbiro
             {
                 ConflictResolution = ConflictResolution.Automatic,
                 DaysToSynchronizeInTheFuture = 365,
-                DaysToSynchronizeInThePast = 60,
+                DaysToSynchronizeInThePast = 365,
                 SynchronizationIntervalInMinutes = 0,
                 SynchronizationMode = SynchronizationMode.MergeInBothDirections,
                 Name = name,

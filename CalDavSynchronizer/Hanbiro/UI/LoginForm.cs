@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows.Forms;
 
 namespace CalDavSynchronizer.Hanbiro.UI
@@ -36,20 +37,34 @@ namespace CalDavSynchronizer.Hanbiro.UI
             }
         }
 
-        private async void btLogin_Click(object sender, EventArgs e)
+        private async void DoLogin()
         {
+
             String domain = txtDomain.Text;
             String userId = txtUserID.Text;
             String password = txtPassword.Text;
             updateControl(false);
-             var resutl =  await _viewModel.DoUpdateOptionWithData(domain, userId, password);
+            var resutl = await _viewModel.DoUpdateOptionWithData(domain, userId, password);
             updateControl(true);
             if (resutl)
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
+        }
 
+        private void btLogin_Click(object sender, EventArgs e)
+        {
+            DoLogin();
+        }
+
+        private void txtPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                DoLogin();
+                e.SuppressKeyPress= true;
+            }
         }
     }
 }

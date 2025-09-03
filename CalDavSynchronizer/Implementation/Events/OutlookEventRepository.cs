@@ -274,6 +274,7 @@ namespace CalDavSynchronizer.Implementation.Events
             return Task.FromResult(true);
         }
 
+        // NHANNT
         public async Task<EntityVersion<AppointmentId, DateTime>> Create(Func<IAppointmentItemWrapper, Task<IAppointmentItemWrapper>> entityInitializer, IEventSynchronizationContext context)
         {
             IAppointmentItemWrapper newAppointmentItemWrapper;
