@@ -36,6 +36,7 @@
             this.tbPastDay = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tbFutureDay = new System.Windows.Forms.TextBox();
+            this.cbShowReport = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lbSyncInterval
@@ -55,13 +56,13 @@
             this.cbSyncInterval.FormattingEnabled = true;
             this.cbSyncInterval.Location = new System.Drawing.Point(43, 75);
             this.cbSyncInterval.Name = "cbSyncInterval";
-            this.cbSyncInterval.Size = new System.Drawing.Size(252, 24);
+            this.cbSyncInterval.Size = new System.Drawing.Size(292, 24);
             this.cbSyncInterval.TabIndex = 1;
             // 
             // btOK
             // 
             this.btOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btOK.Location = new System.Drawing.Point(220, 272);
+            this.btOK.Location = new System.Drawing.Point(260, 333);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(75, 30);
             this.btOK.TabIndex = 2;
@@ -103,12 +104,23 @@
             this.tbFutureDay.TabIndex = 6;
             this.tbFutureDay.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFutureDay_KeyPress);
             // 
+            // cbShowReport
+            // 
+            this.cbShowReport.AutoSize = true;
+            this.cbShowReport.Location = new System.Drawing.Point(43, 281);
+            this.cbShowReport.Name = "cbShowReport";
+            this.cbShowReport.Size = new System.Drawing.Size(129, 20);
+            this.cbShowReport.TabIndex = 7;
+            this.cbShowReport.Text = "Show log reports";
+            this.cbShowReport.UseVisualStyleBackColor = true;
+            // 
             // HanbiroAccountConfigForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(338, 329);
+            this.ClientSize = new System.Drawing.Size(378, 383);
+            this.Controls.Add(this.cbShowReport);
             this.Controls.Add(this.tbFutureDay);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbPastDay);
@@ -135,5 +147,6 @@
         private System.Windows.Forms.TextBox tbPastDay;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbFutureDay;
+        private System.Windows.Forms.CheckBox cbShowReport;
     }
 }

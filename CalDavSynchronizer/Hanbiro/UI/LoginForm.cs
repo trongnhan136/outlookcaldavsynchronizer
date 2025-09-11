@@ -44,9 +44,9 @@ namespace CalDavSynchronizer.Hanbiro.UI
             String userId = txtUserID.Text;
             String password = txtPassword.Text;
             updateControl(false);
-            var resutl = await _viewModel.DoUpdateOptionWithData(domain, userId, password);
+            var result = await _viewModel.DoUpdateOptionWithData(domain, userId, password);
             updateControl(true);
-            if (resutl)
+            if (result)
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();

@@ -26,9 +26,9 @@ namespace CalDavSynchronizer.Ui.Options.Views
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            bool a = (bool)values[0];
-            bool b = (bool)values[1];
-            bool c = (bool)values[2];
+            bool a = values[0] is bool ba && ba;
+            bool b = values[1] is bool bb && bb;
+            bool c = values[2] is bool bc && bc;
 
             return a || (b && c) ? Visibility.Visible : Visibility.Collapsed;
         }

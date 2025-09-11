@@ -75,7 +75,8 @@ namespace CalDavSynchronizer.DataAccess
 
                 return new GeneralOptions()
                 {
-                    ShouldCheckForNewerVersions = (int) (key.GetValue(ValueNameShouldCheckForNewerVersions) ?? Convert.ToInt32(Boolean.Parse(ConfigurationManager.AppSettings["checkForNewerVersions"] ?? bool.TrueString))) != 0,
+                    //ShouldCheckForNewerVersions = (int)(key.GetValue(ValueNameShouldCheckForNewerVersions) ?? Convert.ToInt32(Boolean.Parse(ConfigurationManager.AppSettings["checkForNewerVersions"] ?? bool.TrueString))) != 0,
+                    ShouldCheckForNewerVersions = false,
                     CheckIfOnline = (int) (key.GetValue(ValueNameCheckIfOnline) ?? 1) != 0,
                     StoreAppDataInRoamingFolder = (int) (key.GetValue(ValueNameStoreAppDataInRoamingFolder) ?? Convert.ToInt32(Boolean.Parse(ConfigurationManager.AppSettings["storeAppDataInRoamingFolder"] ?? bool.FalseString))) != 0,
                     DisableCertificateValidation = (int) (key.GetValue(ValueNameDisableCertificateValidation) ?? Convert.ToInt32(Boolean.Parse(ConfigurationManager.AppSettings["disableCertificateValidation"] ?? bool.FalseString))) != 0,
@@ -90,10 +91,11 @@ namespace CalDavSynchronizer.DataAccess
                     LogEntityNames = (int) (key.GetValue(ValueNameLogEntityNames) ?? 0) != 0,
                     LogReportsWithWarnings = (int) (key.GetValue(ValueNameLogReportsWithWarnings) ?? 1) != 0,
                     ShowReportsWithWarningsImmediately = (int) (key.GetValue(ValueNameShowReportsWithWarningsImmediately) ?? 0) != 0,
-                    ShowReportsWithErrorsImmediately = (int) (key.GetValue(ValueNameShowReportsWithErrorsImmediately) ?? 1) != 0,
+                    ShowReportsWithErrorsImmediately = (int) (key.GetValue(ValueNameShowReportsWithErrorsImmediately) ?? 0) != 0,
                     MaxReportAgeInDays = (int) (key.GetValue(ValueNameMaxReportAgeInDays) ?? 1),
                     EnableDebugLog = (int) (key.GetValue(ValueNameEnableDebugLog) ?? debugEnabledInConfig) != 0,
-                    EnableTrayIcon = (int) (key.GetValue(ValueNameEnableTrayIcon) ?? 1) != 0,
+                    //EnableTrayIcon = (int) (key.GetValue(ValueNameEnableTrayIcon) ?? 0) != 0,
+                    EnableTrayIcon = false,
                     AcceptInvalidCharsInServerResponse = (int) (key.GetValue(ValueNameAcceptInvalidCharsInServerResponse) ?? 0) != 0,
                     UseUnsafeHeaderParsing = (int) (key.GetValue(ValueNameUseUnsafeHeaderParsing) ?? Convert.ToInt32(SystemNetSettings.UseUnsafeHeaderParsing)) != 0,
                     TriggerSyncAfterSendReceive = (int) (key.GetValue(ValueNameTriggerSyncAfterSendReceive) ?? 0) != 0,

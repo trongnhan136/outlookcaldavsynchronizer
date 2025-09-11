@@ -15,60 +15,54 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+using CalDavSynchronizer.AutomaticUpdates;
+using CalDavSynchronizer.ChangeWatching;
+using CalDavSynchronizer.Contracts;
+using CalDavSynchronizer.DataAccess;
+using CalDavSynchronizer.Globalization;
+using CalDavSynchronizer.Hanbiro;
+using CalDavSynchronizer.Implementation;
+using CalDavSynchronizer.Implementation.Common;
+using CalDavSynchronizer.Implementation.ComWrappers;
+using CalDavSynchronizer.Implementation.TimeZones;
+using CalDavSynchronizer.ProfileTypes;
+using CalDavSynchronizer.Reports;
+using CalDavSynchronizer.Scheduling;
+using CalDavSynchronizer.Ui;
+using CalDavSynchronizer.Ui.Options;
+using CalDavSynchronizer.Ui.Options.Models;
+using CalDavSynchronizer.Ui.Options.ViewModels;
+using CalDavSynchronizer.Ui.Reports.ViewModels;
+using CalDavSynchronizer.Ui.SystrayNotification;
+using CalDavSynchronizer.Ui.SystrayNotification.ViewModels;
+using CalDavSynchronizer.Utilities;
+using GenSync;
+using GenSync.EntityRelationManagement;
+using GenSync.Logging;
+using GenSync.ProgressReport;
+using GenSync.Synchronization;
+using log4net;
+using log4net.Core;
+using log4net.Repository.Hierarchy;
+using Microsoft.Office.Interop.Outlook;
 using System;
-using System.Configuration;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Markup;
-using CalDavSynchronizer.AutomaticUpdates;
-using CalDavSynchronizer.ChangeWatching;
-using CalDavSynchronizer.Contracts;
-using CalDavSynchronizer.DataAccess;
-using CalDavSynchronizer.Implementation.ComWrappers;
-using CalDavSynchronizer.Implementation.Events;
-using CalDavSynchronizer.Reports;
-using CalDavSynchronizer.Scheduling;
-using CalDavSynchronizer.Ui;
-using CalDavSynchronizer.Ui.Reports.ViewModels;
-using CalDavSynchronizer.Utilities;
-using GenSync;
-using GenSync.ProgressReport;
-using log4net;
-using log4net.Repository.Hierarchy;
-using log4net.Core;
-using Microsoft.Office.Interop.Outlook;
+using System.Windows.Media;
 using Application = Microsoft.Office.Interop.Outlook.Application;
 using Exception = System.Exception;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Windows.Media;
-using CalDavSynchronizer.Globalization;
-using CalDavSynchronizer.Implementation;
-using CalDavSynchronizer.Implementation.Common;
-using CalDavSynchronizer.Implementation.Tasks;
-using CalDavSynchronizer.Implementation.TimeZones;
-using CalDavSynchronizer.ProfileTypes;
-using CalDavSynchronizer.Scheduling.ComponentCollectors;
-using CalDavSynchronizer.Ui.Options;
-using CalDavSynchronizer.Ui.Options.BulkOptions.ViewModels;
-using CalDavSynchronizer.Ui.Options.Models;
-using CalDavSynchronizer.Ui.Options.ViewModels;
-using CalDavSynchronizer.Ui.SystrayNotification;
-using CalDavSynchronizer.Ui.SystrayNotification.ViewModels;
-using GenSync.EntityRelationManagement;
-using GenSync.Logging;
-using GenSync.Synchronization;
-using AppointmentId = CalDavSynchronizer.Implementation.Events.AppointmentId;
 using MessageBox = System.Windows.Forms.MessageBox;
-using CalDavSynchronizer.Hanbiro;
 
 namespace CalDavSynchronizer
 {
@@ -142,11 +136,6 @@ namespace CalDavSynchronizer
             _synchronizationStatus = new SynchronizationStatus();
 
             var generalOptions = _generalOptionsDataAccess.LoadOptions();
-
-            // NHANNT 
-            generalOptions.EnableTrayIcon = false;
-            generalOptions.ShouldCheckForNewerVersions = false;
-            // END NHANNT
 
             _daslFilterProvider = new DaslFilterProvider(generalOptions.IncludeCustomMessageClasses);
 
@@ -589,14 +578,15 @@ namespace CalDavSynchronizer
                     return;
                 }
                 GeneralOptions generalOptions = _generalOptionsDataAccess.LoadOptions();
+                var newGeneralOptions = generalOptions.Clone();
                 try
                 {
-                    var newOptions = ShowHanbiroConfigWpfOptions( generalOptions, options, out var oneTimeTasks);
+                    var newOptions = ShowHanbiroConfigWpfOptions(newGeneralOptions, options, out var oneTimeTasks);
 
                     if (newOptions != null)
                     {
                         s_logger.Info("Applying new options");
-                        await ApplyNewOptions(options, newOptions, generalOptions, oneTimeTasks);
+                        await DoEditGeneralOptionsAsync(generalOptions, newGeneralOptions, options, newOptions, oneTimeTasks);
                         s_logger.Info("Applied new options");
 
                         var handler = SyncProfileChanged;
@@ -615,6 +605,36 @@ namespace CalDavSynchronizer
             }
         }
 
+       
+        private async Task DoEditGeneralOptionsAsync(GeneralOptions beforeGeneralOptions, GeneralOptions editGeneralOptions, Options[] oldOptions, Options[] newOptions,IEnumerable<OneTimeChangeCategoryTask> oneTimeTasks)
+        {
+
+            ConfigureServicePointManager(editGeneralOptions);
+            ConfigureLogLevel(editGeneralOptions.EnableDebugLog);
+
+            _updateChecker.IsEnabled = editGeneralOptions.ShouldCheckForNewerVersions;
+            _reportGarbageCollection.MaxAge = TimeSpan.FromDays(editGeneralOptions.MaxReportAgeInDays);
+
+            _generalOptionsDataAccess.SaveOptions(editGeneralOptions);
+            UpdateGeneralOptionDependencies(editGeneralOptions);
+
+            await ApplyNewOptions(oldOptions, newOptions, editGeneralOptions, oneTimeTasks);
+
+            if (editGeneralOptions.EnableTrayIcon != beforeGeneralOptions.EnableTrayIcon)
+            {
+                _trayNotifier.Dispose();
+                _trayNotifier = editGeneralOptions.EnableTrayIcon ? new TrayNotifier(this) : NullTrayNotifer.Instance;
+            }
+
+            if (_syncObject != null && editGeneralOptions.TriggerSyncAfterSendReceive != beforeGeneralOptions.TriggerSyncAfterSendReceive)
+            {
+                if (editGeneralOptions.TriggerSyncAfterSendReceive)
+                    _syncObject.SyncEnd += SyncObject_SyncEnd;
+                else
+                    _syncObject.SyncEnd -= SyncObject_SyncEnd;
+            }
+        }
+
         public Options[] ShowHanbiroConfigWpfOptions( GeneralOptions generalOptions, Options[] options, out OneTimeChangeCategoryTask[] oneTimeTasks)
         {
             var optionTasks = new OptionTasks(_session, EnumDisplayNameProvider.Instance, _outlookSession);
@@ -628,7 +648,7 @@ namespace CalDavSynchronizer
             var categoryNames = categories.Select(c => c.Name).ToArray();
             OptionModelSessionData sessionData = new OptionModelSessionData(categories.ToDictionary(c => c.Name, _outlookSession.CategoryNameComparer));
             var viewModel = new HanbiroLoginViewModel(
-                generalOptions.ExpandAllSyncProfiles,
+                generalOptions,
                 GetProfileDataDirectory,
                 _uiService,
                 optionTasks,
@@ -665,7 +685,7 @@ namespace CalDavSynchronizer
             var categoryNames = categories.Select(c => c.Name).ToArray();
             OptionModelSessionData sessionData = new OptionModelSessionData(categories.ToDictionary(c => c.Name, _outlookSession.CategoryNameComparer));
             var viewModel = new HanbiroLoginViewModel(
-                generalOptions.ExpandAllSyncProfiles,
+                generalOptions,
                 GetProfileDataDirectory,
                 _uiService,
                 optionTasks,

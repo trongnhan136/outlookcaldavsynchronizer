@@ -41,9 +41,11 @@ namespace CalDavSynchronizer.Hanbiro
         public event EventHandler RequestBringIntoView;
         public event EventHandler<CloseEventArgs> CloseRequested;
 
+        private readonly GeneralOptions _generalOptions;
+
 
         public HanbiroLoginViewModel(
-           bool expandAllSyncProfiles,
+           GeneralOptions generalOptions,
            Func<Guid, string> profileDataDirectoryFactory,
            IUiService uiService,
            IOptionTasks optionTasks,
@@ -60,7 +62,8 @@ namespace CalDavSynchronizer.Hanbiro
             if (optionTasks == null) throw new ArgumentNullException(nameof(optionTasks));
             if (viewOptions == null) throw new ArgumentNullException(nameof(viewOptions));
 
-            _expandAllSyncProfiles = expandAllSyncProfiles;
+            _generalOptions = generalOptions;
+            _expandAllSyncProfiles = generalOptions.ExpandAllSyncProfiles;
 
             _profileTypeRegistry = profileTypeRegistry;
             _profileModelFactoriesByType = profileTypeRegistry.AllTypes.ToDictionary(t => t, t => profileModelFactoryFactory(this, t));
@@ -68,19 +71,16 @@ namespace CalDavSynchronizer.Hanbiro
             SaveCommand = new DelegateCommand(shouldSaveNewOptions => Close((bool)shouldSaveNewOptions));
         }
 
+        public GeneralOptions GetGeneralOptions()
+        {
+            return _generalOptions;
+        }
+
         public IViewOptions ViewOptions { get; }
 
         public Contracts.Options[] GetOptionsCollection()
         {
             return _options.Where(o => !o.IsMultipleOptionsTemplateViewModel).Select(o => o.Model.CreateData()).ToArray();
-        }
-
-        public OneTimeChangeCategoryTask[] GetOneTimeTasks()
-        {
-            var oneTimeTasks = new List<OneTimeChangeCategoryTask>();
-            foreach (var options in _options.Where(o => !o.IsMultipleOptionsTemplateViewModel))
-                options.Model.AddOneTimeTasks(oneTimeTasks.Add);
-            return oneTimeTasks.ToArray();
         }
 
         public void RequestRemoval(IOptionsViewModel viewModel)
@@ -162,6 +162,13 @@ namespace CalDavSynchronizer.Hanbiro
             return new OutlookFolderDescriptor(newCalendarFolder.Inner.EntryID, newCalendarFolder.Inner.StoreID, newCalendarFolder.Inner.DefaultItemType, newCalendarFolder.Inner.Name, 0);
         }
 
+        private OutlookFolderDescriptor RootCalendarFolder()
+        {
+            GenericComObjectWrapper<Folder> defaultCalendarFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar) as Folder);
+            // use the selected folder for syncing with kolab
+            return new OutlookFolderDescriptor(defaultCalendarFolder.Inner.EntryID, defaultCalendarFolder.Inner.StoreID, defaultCalendarFolder.Inner.DefaultItemType, defaultCalendarFolder.Inner.Name, 0);
+        }
+
 
         private OutlookFolderDescriptor CreateContactFolder(string newAddressBookName)
         {
@@ -177,6 +184,13 @@ namespace CalDavSynchronizer.Hanbiro
                 newAddressBookFolder.Inner.Name = newAddressBookName;
             }
             return new OutlookFolderDescriptor(newAddressBookFolder.Inner.EntryID, newAddressBookFolder.Inner.StoreID, newAddressBookFolder.Inner.DefaultItemType, newAddressBookFolder.Inner.Name, 0);
+        }
+
+
+        private OutlookFolderDescriptor RootContactFolder()
+        {
+            GenericComObjectWrapper<Folder> defaultAddressBookFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderContacts) as Folder);
+            return new OutlookFolderDescriptor(defaultAddressBookFolder.Inner.EntryID, defaultAddressBookFolder.Inner.StoreID, defaultAddressBookFolder.Inner.DefaultItemType, defaultAddressBookFolder.Inner.Name, 0);
         }
 
 
@@ -205,9 +219,9 @@ namespace CalDavSynchronizer.Hanbiro
                 EnableChangeTriggeredSynchronization = true,
             };
         }
-        private IOptionsViewModel CreateCalendarProfile(string folderName, string baseUrl,string userName, SecureString pass)
+        private IOptionsViewModel CreateCalendarProfile(string folderName, string baseUrl,string userName, SecureString pass, bool testProfile)
         {
-            var folder = CreateCalendarFolder(folderName);
+            var folder = testProfile ? RootCalendarFolder() : CreateCalendarFolder(folderName);
             var option = CreateNormalOption("calendar_" + folderName, folder);
             option.ExtraData = baseUrl;
             option.CalenderUrl = String.Format("{0}/calendar/", baseUrl);
@@ -219,9 +233,9 @@ namespace CalDavSynchronizer.Hanbiro
             return model;
         }
 
-        private IOptionsViewModel CreateCardProfile(string folderName, string baseUrl, string userName, SecureString pass)
+        private IOptionsViewModel CreateCardProfile(string folderName, string baseUrl, string userName, SecureString pass, bool testProfile)
         {
-            var folder = CreateContactFolder(folderName);
+            var folder = testProfile ? RootContactFolder() : CreateContactFolder(folderName);
             var option = CreateNormalOption("card_" + folderName, folder);
             option.ExtraData = baseUrl;
             option.CalenderUrl = String.Format("{0}/card/", baseUrl);
@@ -264,6 +278,30 @@ namespace CalDavSynchronizer.Hanbiro
             } 
         }
 
+        public bool ShowReport
+        {
+            get
+            {
+               return _generalOptions.ShowReportsWithErrorsImmediately || _generalOptions.ShowReportsWithWarningsImmediately;
+            }
+
+            set
+            {
+                _generalOptions.ShowReportsWithErrorsImmediately = value;
+                _generalOptions.ShowReportsWithWarningsImmediately = value;
+            }
+        }
+
+
+        public OneTimeChangeCategoryTask[] GetOneTimeTasks()
+        {
+            var oneTimeTasks = new List<OneTimeChangeCategoryTask>();
+            foreach (var options in _options.Where(o => !o.IsMultipleOptionsTemplateViewModel))
+                options.Model.AddOneTimeTasks(oneTimeTasks.Add);
+            return oneTimeTasks.ToArray();
+        }
+
+
         public async Task<bool> DoUpdateOptionWithData(String domain, String userId, String password)
         {
             string folderName = userId + " (" + domain + ")";
@@ -272,23 +310,37 @@ namespace CalDavSynchronizer.Hanbiro
             var userName = String.Format("{0}@{1}", userId, domain);
 
             var calendarProfile = FindCalendarProfile();
-            if(calendarProfile == null)
+            IOptionsViewModel calendarTestProfile = calendarProfile; 
+            if (calendarTestProfile == null)
             {
-                calendarProfile = CreateCalendarProfile(folderName, baseUrl, userName, passwordSec);
-                _options.Add(calendarProfile);
+                calendarTestProfile = CreateCalendarProfile(folderName, baseUrl, userName, passwordSec, true);
             }
 
             var cardProfile = FindContactProfile();
-            if (cardProfile == null)
+            IOptionsViewModel cardTestProfile = cardProfile;
+            if (cardTestProfile == null)
             {
-                cardProfile = CreateCardProfile(folderName, baseUrl, userName, passwordSec);
-                _options.Add(cardProfile);
+                cardTestProfile = CreateCardProfile(folderName, baseUrl, userName, passwordSec, true);
             }
 
-            var result = await TestConnectionAsync(calendarProfile.Model);
+            var result = await TestConnectionAsync(calendarTestProfile.Model);
             if (result)
             {
-                result = await TestConnectionAsync(cardProfile.Model);
+                result = await TestConnectionAsync(cardTestProfile.Model);
+            }
+
+            if (result)
+            {
+                if (calendarProfile == null)
+                {
+                    calendarProfile = CreateCalendarProfile(folderName, baseUrl, userName, passwordSec, false);
+                    _options.Add(calendarProfile);
+                }
+                if (cardProfile == null)
+                {
+                    cardProfile = CreateCardProfile(folderName, baseUrl, userName, passwordSec, false);
+                    _options.Add(cardProfile);
+                }
             }
             return result;
         }

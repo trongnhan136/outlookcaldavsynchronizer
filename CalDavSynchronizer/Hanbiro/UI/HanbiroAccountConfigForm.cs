@@ -32,6 +32,8 @@ namespace CalDavSynchronizer.Hanbiro.UI
 
             tbPastDay.Text = currentProfile.Model.DaysToSynchronizeInThePast.ToString();
             tbFutureDay.Text = currentProfile.Model.DaysToSynchronizeInTheFuture.ToString();
+
+            cbShowReport.Checked = viewModel.ShowReport;
         }
 
         private void btOK_Click(object sender, EventArgs e)
@@ -52,6 +54,8 @@ namespace CalDavSynchronizer.Hanbiro.UI
                 cardProfile.Model.DaysToSynchronizeInThePast = int.Parse(tbPastDay.Text);
                 cardProfile.Model.DaysToSynchronizeInTheFuture = int.Parse(tbFutureDay.Text);
             }
+
+            _viewModel.ShowReport = cbShowReport.Checked;
 
             this.DialogResult = DialogResult.OK;
             this.Close();
