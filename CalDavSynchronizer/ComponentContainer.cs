@@ -798,7 +798,11 @@ namespace CalDavSynchronizer
         private async Task ApplyNewOptions(Options[] oldOptions, Options[] newOptions, GeneralOptions generalOptions, IEnumerable<OneTimeChangeCategoryTask> oneTimeTasks)
         {
             _optionsDataAccess.Save(newOptions);
+
+            // NHANNT when logout -> newOptions is empty -> but folder watcher still listen events from folderwatcher.
+            // need away dispose watcher
             await _scheduler.SetOptions(newOptions, generalOptions);
+
             _permanentStatusesViewModel.NotifyProfilesChanged(newOptions);
             DeleteEntityChachesForChangedProfiles(oldOptions, newOptions);
             _oneTimeTaskRunner.RunOneTimeTasks(oneTimeTasks);
