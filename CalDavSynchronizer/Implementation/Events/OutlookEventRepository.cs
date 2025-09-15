@@ -278,7 +278,7 @@ namespace CalDavSynchronizer.Implementation.Events
         public async Task<EntityVersion<AppointmentId, DateTime>> Create(Func<IAppointmentItemWrapper, Task<IAppointmentItemWrapper>> entityInitializer, IEventSynchronizationContext context)
         {
             IAppointmentItemWrapper newAppointmentItemWrapper;
-
+            // NHANNT
             using (var folderWrapper = CreateFolderWrapper())
             {
                 newAppointmentItemWrapper = _comWrapperFactory.Create(

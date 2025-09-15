@@ -45,6 +45,7 @@ using log4net;
 using log4net.Core;
 using log4net.Repository.Hierarchy;
 using Microsoft.Office.Interop.Outlook;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -551,6 +552,24 @@ namespace CalDavSynchronizer
         {
             var options = _optionsDataAccess.Load();
             GeneralOptions generalOptions = _generalOptionsDataAccess.LoadOptions();
+
+
+            var session = Globals.ThisAddIn.Application.Session;
+
+            foreach (var data in options)
+            {
+                try
+                {
+                    var folder = session.GetFolderFromID(data.OutlookFolderEntryId, data.OutlookFolderStoreId) as Folder;
+                    if (folder != null)
+                    {
+                        folder.Delete();
+                    }
+                }catch
+                {
+                }
+            }
+
             try
             {
                 var newOptions = new Options[0];

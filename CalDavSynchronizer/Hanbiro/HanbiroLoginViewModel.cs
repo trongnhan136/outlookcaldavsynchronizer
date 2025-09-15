@@ -143,24 +143,122 @@ namespace CalDavSynchronizer.Hanbiro
 
         private OutlookFolderDescriptor CreateCalendarFolder(string newCalendarName)
         {
+            s_logger.Info(String.Format("HANBIRO_CreateCalendarFolder {0}", newCalendarName));
             GenericComObjectWrapper<Folder> defaultCalendarFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar) as Folder);
             GenericComObjectWrapper<Folder> newCalendarFolder = null;
             try
             {
                 // Use existing folder if it does exist
+                s_logger.Info(String.Format("HANBIRO_try use exist", newCalendarName));
                 newCalendarFolder = new GenericComObjectWrapper<Folder>(defaultCalendarFolder.Inner.Folders[newCalendarName] as Folder);
+                s_logger.Info(String.Format("HANBIRO_try use exist success", newCalendarName));
             }
             catch
             {
+                s_logger.Info(String.Format("HANBIRO_try create missing folder", newCalendarName));
                 // Create missing folder
                 newCalendarFolder = new GenericComObjectWrapper<Folder>(defaultCalendarFolder.Inner.Folders.Add(newCalendarName, OlDefaultFolders.olFolderCalendar) as Folder);
                 // Make sure it has not been renamed to "name (this computer only)"
                 newCalendarFolder.Inner.Name = newCalendarName;
+
+                s_logger.Info(String.Format("HANBIRO_try create missing folder success {0} {1}", newCalendarFolder.Inner.EntryID, newCalendarFolder.Inner.StoreID));
             }
 
             // use the selected folder for syncing with kolab
             return new OutlookFolderDescriptor(newCalendarFolder.Inner.EntryID, newCalendarFolder.Inner.StoreID, newCalendarFolder.Inner.DefaultItemType, newCalendarFolder.Inner.Name, 0);
         }
+
+        private OutlookFolderDescriptor CreateCalendarFoldeer(string newCalendarName)
+        {
+            s_logger.Info($"HANBIRO_CreateCalendarFolder {newCalendarName}");
+            GenericComObjectWrapper<Folder> defaultCalendarFolder =
+              new GenericComObjectWrapper<Folder>(
+                Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar) as Folder
+              );
+
+            GenericComObjectWrapper<Folder> newCalendarFolder = null;
+
+            try
+            {
+                // Try to get existing folder
+                var existingFolder = defaultCalendarFolder.Inner.Folders[newCalendarName] as Folder;
+                if (existingFolder != null)
+                {
+                    s_logger.Info($"HANBIRO_found existing folder, deleting {newCalendarName}");
+
+                    // Delete existing folder
+                    existingFolder.Delete();
+                }
+            }
+            catch
+            {
+                s_logger.Info($"HANBIRO_no existing folder named {newCalendarName}");
+            }
+
+            // Always create a new folder
+            s_logger.Info($"HANBIRO_creating fresh folder {newCalendarName}");
+            newCalendarFolder = new GenericComObjectWrapper<Folder>(
+              defaultCalendarFolder.Inner.Folders.Add(newCalendarName, OlDefaultFolders.olFolderCalendar) as Folder
+            );
+
+            // Ensure the folder name is exactly as requested
+            newCalendarFolder.Inner.Name = newCalendarName;
+
+            s_logger.Info($"HANBIRO_created fresh folder {newCalendarFolder.Inner.EntryID} {newCalendarFolder.Inner.StoreID}");
+
+            return new OutlookFolderDescriptor(
+              newCalendarFolder.Inner.EntryID,
+              newCalendarFolder.Inner.StoreID,
+              newCalendarFolder.Inner.DefaultItemType,
+              newCalendarFolder.Inner.Name,
+              0
+            );
+        }
+
+   
+        private OutlookFolderDescriptor CreateCalendarFolderAndDeleteIfExist(string newCalendarName)
+        {
+            s_logger.Info(String.Format("HANBIRO_CreateCalendarFolder {0}", newCalendarName));
+            GenericComObjectWrapper<Folder> defaultCalendarFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderCalendar) as Folder);
+            GenericComObjectWrapper<Folder> newCalendarFolder = null;
+
+            try
+            {
+                // Try to get existing folder
+                var existingFolder = defaultCalendarFolder.Inner.Folders[newCalendarName] as Folder;
+                if (existingFolder != null)
+                {
+                    s_logger.Info($"HANBIRO_found existing folder, deleting {newCalendarName}");
+
+                    // Delete existing folder
+                    existingFolder.Delete();
+                }
+            }
+            catch
+            {
+                s_logger.Info($"HANBIRO_no existing folder named {newCalendarName}");
+            }
+
+            // Always create a new folder
+            s_logger.Info($"HANBIRO_creating fresh folder {newCalendarName}");
+            newCalendarFolder = new GenericComObjectWrapper<Folder>(
+              defaultCalendarFolder.Inner.Folders.Add(newCalendarName, OlDefaultFolders.olFolderCalendar) as Folder
+            );
+
+            // Ensure the folder name is exactly as requested
+            newCalendarFolder.Inner.Name = newCalendarName;
+
+            s_logger.Info($"HANBIRO_created fresh folder {newCalendarFolder.Inner.EntryID} {newCalendarFolder.Inner.StoreID}");
+
+            return new OutlookFolderDescriptor(
+              newCalendarFolder.Inner.EntryID,
+              newCalendarFolder.Inner.StoreID,
+              newCalendarFolder.Inner.DefaultItemType,
+              newCalendarFolder.Inner.Name,
+              0
+            );
+        }
+
 
         private OutlookFolderDescriptor RootCalendarFolder()
         {
@@ -174,6 +272,7 @@ namespace CalDavSynchronizer.Hanbiro
         {
             GenericComObjectWrapper<Folder> defaultAddressBookFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderContacts) as Folder);
             GenericComObjectWrapper<Folder> newAddressBookFolder = null;
+
             try
             {
                 newAddressBookFolder = new GenericComObjectWrapper<Folder>(defaultAddressBookFolder.Inner.Folders[newAddressBookName] as Folder);
@@ -184,6 +283,48 @@ namespace CalDavSynchronizer.Hanbiro
                 newAddressBookFolder.Inner.Name = newAddressBookName;
             }
             return new OutlookFolderDescriptor(newAddressBookFolder.Inner.EntryID, newAddressBookFolder.Inner.StoreID, newAddressBookFolder.Inner.DefaultItemType, newAddressBookFolder.Inner.Name, 0);
+        }
+
+        private OutlookFolderDescriptor CreateContactFolderAndDeleteIfExist(string newAddressBookName)
+        {
+            GenericComObjectWrapper<Folder> defaultAddressBookFolder = new GenericComObjectWrapper<Folder>(Globals.ThisAddIn.Application.Session.GetDefaultFolder(OlDefaultFolders.olFolderContacts) as Folder);
+            GenericComObjectWrapper<Folder> newAddressBookFolder = null;
+
+            try
+            {
+                // Try to get existing folder
+                var existingFolder = defaultAddressBookFolder.Inner.Folders[newAddressBookName] as Folder;
+                if (existingFolder != null)
+                {
+                    s_logger.Info($"HANBIRO_found existing folder, deleting {newAddressBookName}");
+
+                    // Delete existing folder
+                    existingFolder.Delete();
+                }
+            }
+            catch
+            {
+                s_logger.Info($"HANBIRO_no existing folder named {newAddressBookName}");
+            }
+
+            // Always create a new folder
+            s_logger.Info($"HANBIRO_creating fresh folder {newAddressBookName}");
+            newAddressBookFolder = new GenericComObjectWrapper<Folder>(
+              defaultAddressBookFolder.Inner.Folders.Add(newAddressBookName, OlDefaultFolders.olFolderContacts) as Folder
+            );
+
+            // Ensure the folder name is exactly as requested
+            newAddressBookFolder.Inner.Name = newAddressBookName;
+
+            s_logger.Info($"HANBIRO_created fresh folder {newAddressBookFolder.Inner.EntryID} {newAddressBookFolder.Inner.StoreID}");
+
+            return new OutlookFolderDescriptor(
+              newAddressBookFolder.Inner.EntryID,
+              newAddressBookFolder.Inner.StoreID,
+              newAddressBookFolder.Inner.DefaultItemType,
+              newAddressBookFolder.Inner.Name,
+              0
+            );
         }
 
 
@@ -221,7 +362,7 @@ namespace CalDavSynchronizer.Hanbiro
         }
         private IOptionsViewModel CreateCalendarProfile(string folderName, string baseUrl,string userName, SecureString pass, bool testProfile)
         {
-            var folder = testProfile ? RootCalendarFolder() : CreateCalendarFolder(folderName);
+            var folder = testProfile ? RootCalendarFolder() : CreateCalendarFolderAndDeleteIfExist(folderName);
             var option = CreateNormalOption("calendar_" + folderName, folder);
             option.ExtraData = baseUrl;
             option.CalenderUrl = String.Format("{0}/calendar/", baseUrl);
@@ -235,7 +376,7 @@ namespace CalDavSynchronizer.Hanbiro
 
         private IOptionsViewModel CreateCardProfile(string folderName, string baseUrl, string userName, SecureString pass, bool testProfile)
         {
-            var folder = testProfile ? RootContactFolder() : CreateContactFolder(folderName);
+            var folder = testProfile ? RootContactFolder() : CreateContactFolderAndDeleteIfExist(folderName);
             var option = CreateNormalOption("card_" + folderName, folder);
             option.ExtraData = baseUrl;
             option.CalenderUrl = String.Format("{0}/card/", baseUrl);
@@ -288,7 +429,7 @@ namespace CalDavSynchronizer.Hanbiro
             set
             {
                 _generalOptions.ShowReportsWithErrorsImmediately = value;
-                _generalOptions.ShowReportsWithWarningsImmediately = value;
+                _generalOptions.ShowReportsWithWarningsImmediately = false;
             }
         }
 
@@ -305,6 +446,7 @@ namespace CalDavSynchronizer.Hanbiro
         public async Task<bool> DoUpdateOptionWithData(String domain, String userId, String password)
         {
             string folderName = userId + " (" + domain + ")";
+            //string folderName = $"{userId} ({domain})_{DateTime.Now:yyyyMMdd_HHmmssfff}";
             string baseUrl = String.Format("https://{0}:15201/{1}@{2}", domain, userId, domain);
             var passwordSec = SecureStringUtility.ToSecureString(password);
             var userName = String.Format("{0}@{1}", userId, domain);
@@ -328,6 +470,7 @@ namespace CalDavSynchronizer.Hanbiro
             {
                 result = await TestConnectionAsync(cardTestProfile.Model);
             }
+
 
             if (result)
             {

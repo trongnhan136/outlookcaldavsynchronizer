@@ -18,6 +18,9 @@ namespace CalDavSynchronizer.Hanbiro.UI
         {
             InitializeComponent();
             this._viewModel = viewModel;
+            //txtDomain.Text = "n.hanbiro.com";
+            //txtUserID.Text = "nhannt";
+            //txtPassword.Text = "H4nbjr0!23456789";
         }
 
         void updateControl(bool enable)
