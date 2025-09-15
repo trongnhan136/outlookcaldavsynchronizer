@@ -143,6 +143,35 @@ namespace CalDavSynchronizer.Scheduling
                 }
             }
 
+
+            // where method stop deleted scheduler
+            _runnersById = workersById;
+        }
+
+        public void ClearOptions(Options[] options)
+        {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            Dictionary<Guid, SynchronizationProfileRunner> workersById = new Dictionary<Guid, SynchronizationProfileRunner>();
+            foreach (var option in options)
+            {
+                try
+                {
+                    SynchronizationProfileRunner profileRunner;
+                    if (_runnersById.TryGetValue(option.Id, out profileRunner))
+                    {
+                        profileRunner.CleanEvent();
+                    }
+                }
+                catch (Exception x)
+                {
+                    ExceptionHandler.Instance.LogException(x, s_logger);
+                }
+            }
+
+
+            // where method stop deleted scheduler
             _runnersById = workersById;
         }
 

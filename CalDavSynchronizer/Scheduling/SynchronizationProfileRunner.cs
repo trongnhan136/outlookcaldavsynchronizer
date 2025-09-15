@@ -112,6 +112,18 @@ namespace CalDavSynchronizer.Scheduling
             _errorHandlingStrategy = new ErrorHandlingStrategy(_profile, _dateTimeProvider, 0);
         }
 
+        public void CleanEvent()
+        {
+            _pendingOutlookItems.Clear();
+            _fullSyncPending = false;
+
+            if (!_profile.IsEmpty)
+            {
+                _profile.FolderChangeWatcher.ItemSavedOrDeleted -= FolderChangeWatcher_ItemSavedOrDeleted;
+                _profile.FolderChangeWatcher.Dispose();
+            }
+        }
+
         public async Task UpdateOptions(Options options, GeneralOptions generalOptions)
         {
             if (options == null)

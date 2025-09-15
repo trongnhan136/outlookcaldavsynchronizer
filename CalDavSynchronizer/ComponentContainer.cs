@@ -548,6 +548,19 @@ namespace CalDavSynchronizer
             }
         }
 
+        private void ApplyClearOptions(Options[] oldOptions, Options[] newOptions, GeneralOptions generalOptions, IEnumerable<OneTimeChangeCategoryTask> oneTimeTasks)
+        {
+            _optionsDataAccess.Save(newOptions);
+
+            // NHANNT when logout -> newOptions is empty -> but folder watcher still listen events from folderwatcher.
+            // need away dispose watcher
+             _scheduler.ClearOptions(oldOptions);
+
+            _permanentStatusesViewModel.NotifyProfilesChanged(newOptions);
+            DeleteEntityChachesForChangedProfiles(oldOptions, newOptions);
+            _oneTimeTaskRunner.RunOneTimeTasks(oneTimeTasks);
+        }
+
         public async Task LogoutHanbiroAccount()
         {
             var options = _optionsDataAccess.Load();
@@ -575,7 +588,9 @@ namespace CalDavSynchronizer
                 var newOptions = new Options[0];
                 var oneTimeTask = new OneTimeChangeCategoryTask[0];
                 s_logger.Info("Applying new options");
+
                 await ApplyNewOptions(options, newOptions, generalOptions, oneTimeTask);
+                //ApplyClearOptions(options, newOptions, generalOptions, oneTimeTask);
                 s_logger.Info("Applied new options");
 
                 var handler = SyncProfileChanged;
