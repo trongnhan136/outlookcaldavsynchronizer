@@ -128,6 +128,14 @@ namespace CalDavSynchronizer
                 s_logger.Info("Initializing component container.");
                 await ComponentContainer.InitializeSchedulerAndStartAsync();
 
+
+                // Schedule second call without blocking
+                _ = System.Threading.Tasks.Task.Run(async () =>
+                {
+                    await System.Threading.Tasks.Task.Delay(2000);
+                    OnSyncProfileChanged();
+                });
+
                 s_logger.Info("StartupTimer_Tick exiting.");
             }
             catch (Exception x)
