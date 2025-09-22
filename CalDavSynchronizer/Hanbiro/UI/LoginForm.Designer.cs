@@ -91,6 +91,7 @@ namespace CalDavSynchronizer.Hanbiro.UI
             // 
             this.txtDomain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDomain.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtDomain.Location = new System.Drawing.Point(40, 76);
             this.txtDomain.Name = "txtDomain";
             this.txtDomain.Size = new System.Drawing.Size(289, 22);
@@ -100,6 +101,7 @@ namespace CalDavSynchronizer.Hanbiro.UI
             // 
             this.txtUserID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtUserID.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.txtUserID.Location = new System.Drawing.Point(40, 155);
             this.txtUserID.Name = "txtUserID";
             this.txtUserID.Size = new System.Drawing.Size(289, 22);
